@@ -7,6 +7,7 @@ import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
 import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
 import org.siu.myboot.auth.jwt.TokenProvider;
 import org.siu.myboot.auth.service.AkagiTokenStatefulService;
+import org.siu.myboot.auth.service.PermitService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -103,6 +104,12 @@ public class AkagiAutoConfigure {
         DefaultAccessDeniedHandler defaultAccessDeniedHandler = new DefaultAccessDeniedHandler();
         DefaultAuthenticationEntryPoint defaultAuthenticationEntryPoint = new DefaultAuthenticationEntryPoint();
         return new AkagiWebSecurityConfig(tokenProvider, akagiTokenStatefulService, defaultAuthenticationEntryPoint, defaultAccessDeniedHandler, this.properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public PermitService permitService() {
+        return new PermitService();
     }
 
 
