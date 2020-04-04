@@ -2,7 +2,7 @@ package org.siu.myboot.auth.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.Getter;
-import org.siu.myboot.core.entity.AuthUser;
+import org.siu.myboot.auth.model.AuthUser;
 import org.siu.myboot.auth.constant.Constant;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,7 +10,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-//import org.siu.myboot.core.exception.AuthenticateFail;
 
 import java.security.Key;
 import java.util.Arrays;

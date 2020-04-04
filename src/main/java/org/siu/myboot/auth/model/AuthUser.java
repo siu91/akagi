@@ -17,25 +17,25 @@ public class AuthUser extends User {
     /**
      * 更新版本
      */
-    private long version = -1;
+    private long tokenVersion = -1;
 
     /**
      * 认证&授权的时间
      */
     private Date authTime;
 
-    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, long version) {
+    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, long tokenVersion) {
         super(username, password, authorities);
-        this.version = version;
+        this.tokenVersion = tokenVersion;
     }
 
-    public AuthUser(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long version) {
+    public AuthUser(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long tokenVersion) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.version = version;
+        this.tokenVersion = tokenVersion;
     }
 
-    public long getVersion() {
-        return version;
+    public long getTokenVersion() {
+        return tokenVersion;
     }
 
     public Date getAuthTime() {

@@ -9,24 +9,21 @@ import org.springframework.data.redis.core.*;
 import java.io.Serializable;
 
 /**
- * 封装redis 操作
- *
  * @Author Siu
  * @Date 2020/2/21 16:13
  * @Version 0.0.1
  */
-public class AkagiTokenStatefulService {
-    private Logger logger = LoggerFactory.getLogger(AkagiTokenStatefulService.class);
+public class DefaultRedisTokenStatefulService implements TokenStateful {
+    private Logger logger = LoggerFactory.getLogger(DefaultRedisTokenStatefulService.class);
 
     private final RedisTemplate redisTemplate;
 
-    public AkagiTokenStatefulService(RedisTemplate redisTemplate) {
+    public DefaultRedisTokenStatefulService(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
 
-
-
+    @Override
     public Long getTokenVersion(final String userName) {
         Object result;
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
@@ -44,6 +41,7 @@ public class AkagiTokenStatefulService {
      * @param value
      * @return
      */
+    @Override
     public boolean setTokenVersion(final String userName, long value) {
         boolean result = false;
         try {
@@ -55,7 +53,6 @@ public class AkagiTokenStatefulService {
         }
         return result;
     }
-
 
 
 }

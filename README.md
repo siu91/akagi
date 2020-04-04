@@ -12,6 +12,16 @@
 
 
 
+## 接入模式说明
+
+### SINGLE模式
+
+![image-20200404115623785](./assets/akagi-single.png)
+
+### CS模式
+
+![image-20200404115753822](./assets/akagi-cs.png)
+
 ## Quick Start
 
 * git clone & mvn install 

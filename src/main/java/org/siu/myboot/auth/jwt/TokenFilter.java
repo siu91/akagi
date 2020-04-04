@@ -2,8 +2,9 @@ package org.siu.myboot.auth.jwt;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.siu.myboot.auth.service.AkagiTokenStatefulService;
+import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.service.TokenStateful;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -28,15 +29,15 @@ public class TokenFilter extends GenericFilterBean {
 
 
     private TokenProvider tokenProvider;
-    private AkagiTokenStatefulService akagiTokenStatefulService;
+    private TokenStateful tokenStateful;
 
     public TokenFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
-    public TokenFilter(TokenProvider tokenProvider, AkagiTokenStatefulService akagiTokenStatefulService) {
+    public TokenFilter(TokenProvider tokenProvider, TokenStateful tokenStateful) {
         this.tokenProvider = tokenProvider;
-        this.akagiTokenStatefulService = akagiTokenStatefulService;
+        this.tokenStateful = tokenStateful;
     }
 
     @Override
@@ -51,18 +52,18 @@ public class TokenFilter extends GenericFilterBean {
             Token token = tokenProvider.validate(jwt);
 
             // 验证token版本
-            Long oToken = akagiTokenStatefulService == null ? null : akagiTokenStatefulService.getTokenVersion(token.getUsername());
+            Long oToken = tokenStateful == null ? null : tokenStateful.getTokenVersion(token.getUsername());
             if (oToken != null) {
                 long currentAuthVersion = Long.parseLong(oToken.toString());
                 if (currentAuthVersion == 0) {
                     log.warn("用户已退出登录，请重新登录");
-                    httpServletRequest.getRequestDispatcher(Constant.Auth.AUTH_ERROR_API + "用户已退出登录，请重新登录").forward(httpServletRequest, servletResponse);
+                    httpServletResponse.sendError(601, "用户已退出登录，请重新登录");
                     return;
                 }
                 // token中存在auth 版本，但版本过期了
                 if (token.getAuthVersion() >= 0 && token.getAuthVersion() < currentAuthVersion) {
                     log.warn("用户认证信息版本过期，请重新登录");
-                    httpServletRequest.getRequestDispatcher(Constant.Auth.AUTH_ERROR_API + "用户认证信息版本过期，请重新登录").forward(httpServletRequest, servletResponse);
+                    httpServletResponse.sendError(602, "用户认证信息版本过期，请重新登录");
                     return;
                 }
             }

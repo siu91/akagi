@@ -4,7 +4,8 @@ import org.siu.myboot.auth.autoconfigure.AkagiProperties;
 import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
 import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
 import org.siu.myboot.auth.jwt.TokenProvider;
-import org.siu.myboot.auth.service.AkagiTokenStatefulService;
+import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
+import org.siu.myboot.auth.service.TokenStateful;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -25,7 +26,7 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     private final TokenProvider tokenProvider;
 
-    private final AkagiTokenStatefulService redisService;
+    private final TokenStateful tokenStateful;
 
     /**
      * 认证入口点
@@ -39,9 +40,9 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AkagiProperties akagiProperties;
 
-    public AkagiWebSecurityConfig(TokenProvider tokenProvider, AkagiTokenStatefulService redisService, DefaultAuthenticationEntryPoint authenticationErrorHandler, DefaultAccessDeniedHandler defaultAccessDeniedHandler, AkagiProperties akagiProperties) {
+    public AkagiWebSecurityConfig(TokenProvider tokenProvider, DefaultRedisTokenStatefulService tokenStateful, DefaultAuthenticationEntryPoint authenticationErrorHandler, DefaultAccessDeniedHandler defaultAccessDeniedHandler, AkagiProperties akagiProperties) {
         this.tokenProvider = tokenProvider;
-        this.redisService = redisService;
+        this.tokenStateful = tokenStateful;
         this.authenticationErrorHandler = authenticationErrorHandler;
         this.defaultAccessDeniedHandler = defaultAccessDeniedHandler;
         this.akagiProperties = akagiProperties;
@@ -115,6 +116,6 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
      * @return
      */
     private AkagiSecurityConfigurerAdapter securityConfigurerAdapter() {
-        return new AkagiSecurityConfigurerAdapter(tokenProvider, redisService);
+        return new AkagiSecurityConfigurerAdapter(tokenProvider, tokenStateful);
     }
 }

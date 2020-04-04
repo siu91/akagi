@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @Version 0.0.1
  */
 @Slf4j
-public abstract class AbstractAuthDetailsService implements UserDetailsService {
+public abstract class AbstractAuthService implements UserDetailsService {
 
 
     /**

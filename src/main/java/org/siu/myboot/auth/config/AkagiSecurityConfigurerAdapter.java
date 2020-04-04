@@ -2,7 +2,7 @@ package org.siu.myboot.auth.config;
 
 import org.siu.myboot.auth.jwt.TokenFilter;
 import org.siu.myboot.auth.jwt.TokenProvider;
-import org.siu.myboot.auth.service.AkagiTokenStatefulService;
+import org.siu.myboot.auth.service.TokenStateful;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -20,17 +20,17 @@ public class AkagiSecurityConfigurerAdapter extends SecurityConfigurerAdapter<De
 
     private TokenProvider tokenProvider;
 
-    private AkagiTokenStatefulService redisService;
+    private TokenStateful tokenStateful;
 
 
-    public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider, AkagiTokenStatefulService redisService) {
+    public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider, TokenStateful tokenStateful) {
         this.tokenProvider = tokenProvider;
-        this.redisService = redisService;
+        this.tokenStateful = tokenStateful;
     }
 
     @Override
     public void configure(HttpSecurity http) {
-        TokenFilter tokenFilter = new TokenFilter(tokenProvider, redisService);
+        TokenFilter tokenFilter = new TokenFilter(tokenProvider, tokenStateful);
         // 把JWTFilter 放在默认Spring Security UsernamePasswordAuthenticationFilter 前面
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     }

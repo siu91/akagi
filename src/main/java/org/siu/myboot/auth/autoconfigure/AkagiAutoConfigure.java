@@ -6,7 +6,7 @@ import org.siu.myboot.auth.config.AkagiWebSecurityConfig;
 import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
 import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
 import org.siu.myboot.auth.jwt.TokenProvider;
-import org.siu.myboot.auth.service.AkagiTokenStatefulService;
+import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
 import org.siu.myboot.auth.service.PermitService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,6 +24,8 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
 
@@ -75,14 +77,12 @@ public class AkagiAutoConfigure {
     }
 
 
-    /**
-     * 配置使用注解的时候缓存配置，默认是序列化反序列化的形式，加上此配置则为 json 形式
-     */
+
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "statefulToken", havingValue = "true", matchIfMissing = false)
-    public AkagiTokenStatefulService akagiTokenStatefulService(RedisTemplate redisTemplate) {
-        return new AkagiTokenStatefulService(redisTemplate);
+    public DefaultRedisTokenStatefulService akagiTokenStatefulService(RedisTemplate redisTemplate) {
+        return new DefaultRedisTokenStatefulService(redisTemplate);
     }
 
 
@@ -100,16 +100,26 @@ public class AkagiAutoConfigure {
 
     @Bean
     @ConditionalOnMissingBean
-    public AkagiWebSecurityConfig akagiWebSecurityConfig(TokenProvider tokenProvider, AkagiTokenStatefulService akagiTokenStatefulService) {
+    public AkagiWebSecurityConfig akagiWebSecurityConfig(TokenProvider tokenProvider, DefaultRedisTokenStatefulService defaultRedisTokenStatefulService) {
         DefaultAccessDeniedHandler defaultAccessDeniedHandler = new DefaultAccessDeniedHandler();
         DefaultAuthenticationEntryPoint defaultAuthenticationEntryPoint = new DefaultAuthenticationEntryPoint();
-        return new AkagiWebSecurityConfig(tokenProvider, akagiTokenStatefulService, defaultAuthenticationEntryPoint, defaultAccessDeniedHandler, this.properties);
+        return new AkagiWebSecurityConfig(tokenProvider, defaultRedisTokenStatefulService, defaultAuthenticationEntryPoint, defaultAccessDeniedHandler, this.properties);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public PermitService permitService() {
         return new PermitService();
+    }
+
+    /**
+     * 加密
+     *
+     * @return
+     */
+    @Bean("passwordEncoder")
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 

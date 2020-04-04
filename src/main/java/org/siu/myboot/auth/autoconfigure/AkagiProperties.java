@@ -31,6 +31,14 @@ public class AkagiProperties {
 
 
     /**
+     * 模式
+     * 默认：单体应用接入模式
+     * 1、单体应用模式，集成授权认证、资源权限校验
+     * 2、CS模式，服务端提供认证和授权，客服端接收token（用户信息/认证授权信息）进行资源权限校验
+     */
+    private AkagiMode mode = AkagiMode.SINGLE;
+
+    /**
      * 开放无需认证的接口
      */
     private Set<String> permitAll;

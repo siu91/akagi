@@ -7,10 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
 import org.siu.myboot.auth.model.AuthUser;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
@@ -85,7 +83,7 @@ public class TokenProvider implements InitializingBean {
         long version = -1;
         // 获取用户的版本信息
         if (authentication.getPrincipal() instanceof AuthUser) {
-            version = ((AuthUser) authentication.getPrincipal()).getVersion();
+            version = ((AuthUser) authentication.getPrincipal()).getTokenVersion();
         }
 
         // 构建token信息

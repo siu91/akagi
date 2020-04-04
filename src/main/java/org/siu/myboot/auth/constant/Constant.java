@@ -25,25 +25,9 @@ public class Constant {
         /**
          * 用于认证授权版本号
          */
-        public static final String USER_AUTH_KEY = "SYS:AUTH:USER_AUTH_VERSION:";
+        public static final String USER_AUTH_KEY = "AKAGI:AUTH:USER_AUTH_VERSION:";
     }
 
-
-    /**
-     * 追踪常量
-     */
-    public static class Trace {
-        /**
-         * 父追踪ID
-         */
-        public static final String PARENT_TRACE_ID = "p_tid";
-        public static final String DEFAULT_PARENT_TRACE_ID = "0";
-
-        /**
-         * 追踪ID
-         */
-        public static final String TRACE_ID = "tid";
-    }
 
     /**
      * 认证、授权常量定义
@@ -88,18 +72,7 @@ public class Constant {
          * 无需token校验的接口
          */
         public static final String PERMIT_ALL_API1 = "/v1/api/auth";
-        public static final String PERMIT_ALL_API2 = "/v1/api/register";
-        public static final String PERMIT_ALL_API10 = "/v1/api/auth/error";
-        public static final String PERMIT_ALL_API20 = "/error";
 
-        // 开发放swagger
-        public static final String PERMIT_ALL_SWAGGER_API0 = "**/swagger*/**";
-        public static final String PERMIT_ALL_SWAGGER_API1 = "/v2/api-docs";
-        public static final String PERMIT_ALL_SWAGGER_API2 = "/webjars/springfox-swagger-ui/**/**";
-
-
-        public static final String PERMIT_ALL_SBA0 = "/actuator/**";
-        public static final String PERMIT_ALL_SBA1 = "/actuator/health/**";
 
 
         /**
@@ -110,14 +83,6 @@ public class Constant {
                 //add(PERMIT_ALL_API1);
                // add(PERMIT_ALL_API2);
                // add(PERMIT_ALL_API10);
-                add(PERMIT_ALL_API20);
-
-                add(PERMIT_ALL_SWAGGER_API0);
-                add(PERMIT_ALL_SWAGGER_API1);
-                add(PERMIT_ALL_SWAGGER_API2);
-
-                add(PERMIT_ALL_SBA0);
-                add(PERMIT_ALL_SBA1);
                 // 测试用
                 add("/config/get");
                 add("/echo");
@@ -130,9 +95,7 @@ public class Constant {
         public static final Set<String> NO_CHECK_API = new HashSet<String>() {
             {
                 add(PERMIT_ALL_API1);
-                add(PERMIT_ALL_API2);
-                add(PERMIT_ALL_API10);
-                add(PERMIT_ALL_API20);
+
 
             }
         };
@@ -149,11 +112,6 @@ public class Constant {
 
             }
         };
-
-        /**
-         * 认证失败处理接口
-         */
-        public static final String AUTH_ERROR_API = PERMIT_ALL_API10 + "?msg=";
 
 
     }
