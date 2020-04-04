@@ -7,7 +7,9 @@ import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
 import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
 import org.siu.myboot.auth.jwt.TokenProvider;
 import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
+import org.siu.myboot.auth.service.LoginService;
 import org.siu.myboot.auth.service.PermitService;
+import org.siu.myboot.auth.service.TokenStateful;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -59,6 +61,7 @@ public class AkagiAutoConfigure {
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         template.setConnectionFactory(redisConnectionFactory);
+        log.info("初始化-RedisTemplate");
         return template;
     }
 
@@ -73,15 +76,16 @@ public class AkagiAutoConfigure {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
         RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())).serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
+        log.info("初始化-RedisCacheManager");
         return RedisCacheManager.builder(factory).cacheDefaults(redisCacheConfiguration).build();
     }
-
 
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "statefulToken", havingValue = "true", matchIfMissing = false)
-    public DefaultRedisTokenStatefulService akagiTokenStatefulService(RedisTemplate redisTemplate) {
+    public TokenStateful tokenStateful(RedisTemplate redisTemplate) {
+        log.info("初始化-TokenStateful");
         return new DefaultRedisTokenStatefulService(redisTemplate);
     }
 
@@ -94,22 +98,34 @@ public class AkagiAutoConfigure {
     @Bean
     @ConditionalOnMissingBean
     public TokenProvider tokenProvider() {
+        log.info("初始化-TokenProvider");
         return new TokenProvider(this.properties.getJsonWebTokenBase64Secret(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember());
     }
 
 
     @Bean
     @ConditionalOnMissingBean
-    public AkagiWebSecurityConfig akagiWebSecurityConfig(TokenProvider tokenProvider, DefaultRedisTokenStatefulService defaultRedisTokenStatefulService) {
+    public AkagiWebSecurityConfig akagiWebSecurityConfig(TokenProvider tokenProvider) {
         DefaultAccessDeniedHandler defaultAccessDeniedHandler = new DefaultAccessDeniedHandler();
         DefaultAuthenticationEntryPoint defaultAuthenticationEntryPoint = new DefaultAuthenticationEntryPoint();
-        return new AkagiWebSecurityConfig(tokenProvider, defaultRedisTokenStatefulService, defaultAuthenticationEntryPoint, defaultAccessDeniedHandler, this.properties);
+        log.info("初始化-AkagiWebSecurityConfig");
+        return new AkagiWebSecurityConfig(tokenProvider, defaultAuthenticationEntryPoint, defaultAccessDeniedHandler, this.properties);
+    }
+
+    @Bean("pms")
+    @ConditionalOnMissingBean
+    public PermitService permitService() {
+        PermitService permitService = new PermitService();
+        permitService.setSuperUser(this.properties.getSuperUser());
+        log.info("初始化-PermitService");
+        return permitService;
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public PermitService permitService() {
-        return new PermitService();
+    public LoginService loginService() {
+        log.info("初始化-LoginService");
+        return new LoginService();
     }
 
     /**
@@ -119,6 +135,7 @@ public class AkagiAutoConfigure {
      */
     @Bean("passwordEncoder")
     public PasswordEncoder passwordEncoder() {
+        log.info("初始化-PasswordEncoder");
         return new BCryptPasswordEncoder();
     }
 

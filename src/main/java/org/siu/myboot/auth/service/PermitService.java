@@ -1,5 +1,6 @@
 package org.siu.myboot.auth.service;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +23,9 @@ public class PermitService {
     /**
      * 超级管理员拥有最高权限
      */
-    private static final String SUPER_USER = "SUPERUSER";
+    @Setter
+    private String superUser;
+
 
     public boolean hasPermit(String perm) {
         if (!StringUtils.hasText(perm)) {
@@ -38,7 +41,7 @@ public class PermitService {
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(StringUtils::hasText)
-                .anyMatch(x -> SUPER_USER.equals(x) || PatternMatchUtils.simpleMatch(perm, x));
+                .anyMatch(x -> x.equals(superUser) || PatternMatchUtils.simpleMatch(perm, x));
     }
 }
 

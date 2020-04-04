@@ -20,17 +20,14 @@ public class AkagiSecurityConfigurerAdapter extends SecurityConfigurerAdapter<De
 
     private TokenProvider tokenProvider;
 
-    private TokenStateful tokenStateful;
 
-
-    public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider, TokenStateful tokenStateful) {
+    public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
-        this.tokenStateful = tokenStateful;
     }
 
     @Override
     public void configure(HttpSecurity http) {
-        TokenFilter tokenFilter = new TokenFilter(tokenProvider, tokenStateful);
+        TokenFilter tokenFilter = new TokenFilter(tokenProvider);
         // 把JWTFilter 放在默认Spring Security UsernamePasswordAuthenticationFilter 前面
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     }

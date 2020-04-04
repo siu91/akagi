@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -29,16 +30,17 @@ public class TokenFilter extends GenericFilterBean {
 
 
     private TokenProvider tokenProvider;
+    @Resource
     private TokenStateful tokenStateful;
 
     public TokenFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
-    public TokenFilter(TokenProvider tokenProvider, TokenStateful tokenStateful) {
+/*    public TokenFilter(TokenProvider tokenProvider, TokenStateful tokenStateful) {
         this.tokenProvider = tokenProvider;
         this.tokenStateful = tokenStateful;
-    }
+    }*/
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

@@ -39,6 +39,11 @@ public class AkagiProperties {
     private AkagiMode mode = AkagiMode.SINGLE;
 
     /**
+     * 超级用户
+     */
+    private String superUser;
+
+    /**
      * 开放无需认证的接口
      */
     private Set<String> permitAll;
