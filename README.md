@@ -36,69 +36,109 @@
       </dependency>
   ```
 
-- 配置 yml：
+- SINGLE 模式接入
 
-  ```yml
-  akagi:
-    security:
-        
-  ```
+  - 配置
   
-- 实现抽象方法 AbstractAuthDetailsService#auth(String loginId) ：Auth
+    ```yml
+    akagi:
+      security:
+        # 开放无需认证的接口
+        permit-all:
+          - "/v1/api/login"
+    ```
+  
+  - 代码示例
+  
+    ```java
+    
+    @SpringBootApplication
+    public class Application {
+    
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+    
+    
+        @Data
+        public static class Login {
+            private String username;
+            private String password;
+        }
+    
+        @Slf4j
+        @RestController
+        @RequestMapping("/v1/api")
+        public static class AuthController {
+    
+            @Resource
+            private LoginService loginService;
+    
+            /**
+             * 登录接口
+             * @param login
+             * @return
+             */
+            @PostMapping("/login")
+            public String login(@Validated @RequestBody Login login) {
+                return loginService.login(login.getUsername(), login.getPassword(), false);
+            }
+    
+    
+            /**
+             * 接口使用权限控制
+             * @return
+             */
+            @PostMapping("/test")
+            @PreAuthorize("@pms.hasPermit('USER')")
+            public Object test() {
+                return "success";
+    
+            }
+    
+        }
+    
+    
+        /**
+         * 实现认证授权相关的业务
+         *  1、用户基本信息 2、权限列表
+         */
+        @Service
+        public static class AuthService extends AbstractAuthService {
+    
+            @Resource
+            PasswordEncoder passwordEncoder;
+    
+            @Override
+            public Auth auth(String s) {
+                Auth auth = new Auth();
+                /**
+                 * 可以根据业务情况实现具体的逻辑
+                 * 如：判断用户是否进入黑名单/未激活等
+                 */
+                LoginUser user = new LoginUser();
+                user.setId("siu");
+                user.setPass(passwordEncoder.encode("12345"));
+                user.setTokenVersion(5);
+    
+                List<UserAuthorities> authoritiesList = new ArrayList<>();
+                UserAuthorities authorities = new UserAuthorities();
+                authorities.setRole("USER");
+                authorities.setPermit("USER:UPDATE");
+                authoritiesList.add(authorities);
+    
+                auth.setUser(user);
+                auth.setAuthorities(authoritiesList);
+    
+                return auth;
+            }
+        }
+    
+    }
+    
+    ```
+  
 
-  ```java
-  /**
-   * 实现认证授权相关的业务
-   * 如通过loginId（用户名/手机号等）从数据库中查找用户信息:1、用户基本信息 2、权限列表
-   */
-  
-  @Slf4j
-  @Component("userDetailsService")
-  public class UserDetailsServiceImpl extends AbstractAuthDetailsService {
-            
-      ...
-  
-      /**
-       * @param loginId 用户登录的ID（用户、手机等）
-       * @return
-       */
-      @SneakyThrows
-      @Override
-      public Auth auth(final String loginId) {
-          User user = repo.findByUserNameOrPhone(loginId);
-          List<UserAuthorities> authorities = repo.findUserAuthorities(loginId);     
-          return new Auth(user, authorities);
-      }
-  
-  ```
-  
-- 登录接口
-
-  ```java
-      
-      @Resource
-      private LoginService loginService;
-  
-      @PostMapping("/auth")
-      public Result<String> authorize(@Validated @RequestBody Login login) {
-          String jwt = loginService.login(login.getUser(), login.getPass());
-          return Result.ok(Constant.Auth.TOKEN_PREFIX + jwt);
-  
-      }
-  ```
-  
-  
-  
-- 接口上使用权限控制
-
-  ```java
-  
-      @PostMapping("/password")
-      @PreAuthorize("@pms.hasPermit('USER')")
-      public Object test() {
-         // do whatever
-      }
-  ```
 
 ## TODO
 
