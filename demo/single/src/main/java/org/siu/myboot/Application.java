@@ -51,6 +51,8 @@ public class Application {
 
 
         /**
+         * 登录接口
+         *
          * @param login
          * @return
          */
@@ -61,7 +63,7 @@ public class Application {
 
 
         /**
-         * 修改密码
+         * 接口使用权限控制
          *
          * @return
          */
@@ -76,6 +78,10 @@ public class Application {
     }
 
 
+    /**
+     * 实现认证授权相关的业务
+     *  1、用户基本信息 2、权限列表
+     */
     @Service
     public static class AuthService extends AbstractAuthService {
 
