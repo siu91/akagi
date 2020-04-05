@@ -55,7 +55,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "statefulToken", havingValue = "true", matchIfMissing = false)
+    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "stateful-token", havingValue = "true", matchIfMissing = false)
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
@@ -70,7 +70,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "statefulToken", havingValue = "true", matchIfMissing = false)
+    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "stateful-token", havingValue = "true", matchIfMissing = false)
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         // 配置序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
@@ -83,7 +83,7 @@ public class AkagiAutoConfigure {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "statefulToken", havingValue = "true", matchIfMissing = false)
+    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "stateful-token", havingValue = "true", matchIfMissing = false)
     public TokenStateful tokenStateful(RedisTemplate redisTemplate) {
         log.info("初始化-TokenStateful");
         return new DefaultRedisTokenStatefulService(redisTemplate);
