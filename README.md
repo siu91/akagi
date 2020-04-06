@@ -12,6 +12,8 @@
 
 
 
+## 设计（待补充）
+
 ## 接入模式说明
 
 ### SINGLE模式
@@ -39,106 +41,198 @@
 - SINGLE 模式接入
 
   - 配置
-  
+
     ```yml
     akagi:
       security:
         # 开放无需认证的接口
         permit-all:
           - "/v1/api/login"
+    # redis 配置
+    spring:
+      redis:
+        host: redis.host
+        port: 6379
+        timeout: 20000
+        lettuce:
+          pool:
+            max-active: 200
+            max-wait: -1
+            max-idle: 10
+            min-idle: 0
     ```
-  
+
   - 代码示例
-  
+
     ```java
     
     @SpringBootApplication
     public class Application {
-    
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-    
-    
-        @Data
-        public static class Login {
-            private String username;
-            private String password;
-        }
-    
-        @Slf4j
-        @RestController
-        @RequestMapping("/v1/api")
-        public static class AuthController {
-    
-            @Resource
-            private LoginService loginService;
-    
-            /**
-             * 登录接口
-             * @param login
-             * @return
-             */
-            @PostMapping("/login")
-            public String login(@Validated @RequestBody Login login) {
-                return loginService.login(login.getUsername(), login.getPassword(), false);
+        
+            public static void main(String[] args) {
+                SpringApplication.run(Application.class, args);
             }
-    
-    
-            /**
-             * 接口使用权限控制
-             * @return
-             */
-            @PostMapping("/test")
-            @PreAuthorize("@pms.hasPermit('USER')")
-            public Object test() {
-                return "success";
-    
+        
+        
+            @Data
+            public static class Login {
+                private String username;
+                private String password;
             }
-    
-        }
-    
-    
-        /**
-         * 实现认证授权相关的业务
-         *  1、用户基本信息 2、权限列表
-         */
-        @Service
-        public static class AuthService extends AbstractAuthService {
-    
-            @Resource
-            PasswordEncoder passwordEncoder;
-    
-            @Override
-            public Auth auth(String s) {
-                Auth auth = new Auth();
+        
+            @Slf4j
+            @RestController
+            @RequestMapping("/v1/api")
+            public static class AuthController {
+        
+                @Resource
+                private LoginService loginService;
+        
                 /**
-                 * 可以根据业务情况实现具体的逻辑
-                 * 如：判断用户是否进入黑名单/未激活等
+                 * 登录接口
+                 * @param login
+                 * @return
                  */
-                LoginUser user = new LoginUser();
-                user.setId("siu");
-                user.setPass(passwordEncoder.encode("12345"));
-                user.setTokenVersion(5);
-    
-                List<UserAuthorities> authoritiesList = new ArrayList<>();
-                UserAuthorities authorities = new UserAuthorities();
-                authorities.setRole("USER");
-                authorities.setPermit("USER:UPDATE");
-                authoritiesList.add(authorities);
-    
-                auth.setUser(user);
-                auth.setAuthorities(authoritiesList);
-    
-                return auth;
+                @PostMapping("/login")
+                public String login(@Validated @RequestBody Login login) {
+                    return loginService.login(login.getUsername(), login.getPassword(), false);
+                }
+        
+        
+                /**
+                 * 接口使用权限控制
+                 * @return
+                 */
+                @PostMapping("/test")
+                @PreAuthorize("@pms.hasPermit('USER')")
+                public Object test() {
+                    return "success";
+        
+                }
+        
             }
+        
+        
+            /**
+             * 实现认证授权相关的业务
+             *  1、用户基本信息 2、权限列表
+             */
+            @Service
+            public static class AuthService extends AbstractAuthService {
+        
+                @Resource
+                PasswordEncoder passwordEncoder;
+        
+                @Override
+                public Auth auth(String s) {
+                    Auth auth = new Auth();
+                    /**
+                     * 可以根据业务情况实现具体的逻辑
+                     * 如：判断用户是否进入黑名单/未激活等
+                     */
+                    LoginUser user = new LoginUser();
+                    user.setId("siu");
+                    user.setPass(passwordEncoder.encode("12345"));
+                    user.setTokenVersion(5);
+        
+                    List<UserAuthorities> authoritiesList = new ArrayList<>();
+                    UserAuthorities authorities = new UserAuthorities();
+                    authorities.setRole("USER");
+                    authorities.setPermit("USER:UPDATE");
+                    authoritiesList.add(authorities);
+        
+                    auth.setUser(user);
+                    auth.setAuthorities(authoritiesList);
+        
+                    return auth;
+                }
+            }
+        
         }
-    
-    }
-    
+    ```
+
+- CS模式接入
+
+  - SERVER
+
+    - 配置
+
+      ```yml
+      # 配置同SINGLE模式
+      # 可显示配置模式为：CS_SERVER
+    akagi:
+          mode: CS_SERVER
     ```
   
-
+    - 代码示例
+  
+    ```java
+      // 代码同SINGLE模式
+    ```
+  
+- CLIENT
+  
+    - 配置
+  
+    ```yml
+      akagi:
+      security:
+        # 开放无需认证的接口
+          permit-all:
+          - "/v1/client/api/login"
+        mode: CS_CLIENT
+      ```
+    
+  - 代码示例
+    
+      ```java
+      @SpringBootApplication
+      public class Application {
+    
+          public static void main(String[] args) {
+              SpringApplication.run(Application.class, args);
+          }
+      
+      
+          @Slf4j
+          @RestController
+          @RequestMapping("/v1/client/api")
+          public static class AuthController {
+      
+      
+      
+              /**
+               * 登录接口
+               *
+               * @return
+               */
+              @PostMapping("/login")
+              public String login() {
+                  // 请求服务端（CS_SERVER）获取token
+                  return "token";
+              }
+      
+      
+              /**
+               * 接口使用权限控制
+               *
+               * @return
+               */
+              @PostMapping("/test")
+              @PreAuthorize("@pms.hasPermit('USER')")
+              public Object test() {
+                  return "success";
+      
+              }
+      
+          }
+      
+      
+      }
+      
+      ```
+      
+      
 
 ## TODO
 
