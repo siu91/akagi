@@ -2,7 +2,7 @@ package org.siu.myboot.auth.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
-import org.siu.myboot.auth.jwt.TokenProvider;
+import org.siu.myboot.auth.handler.TokenProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

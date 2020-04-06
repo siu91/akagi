@@ -1,9 +1,9 @@
-package org.siu.myboot.auth.jwt;
+package org.siu.myboot.auth.handler;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.model.Token;
 import org.siu.myboot.auth.service.TokenStateful;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,26 +21,24 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * token 认证过滤器
+ *
  * @Author Siu
  * @Date 2020/3/4 15:15
  * @Version 0.0.1
  */
 @Slf4j
-public class TokenFilter extends GenericFilterBean {
+public class TokenAuthenticationFilter extends GenericFilterBean {
 
 
     private TokenProvider tokenProvider;
     @Resource
     private TokenStateful tokenStateful;
 
-    public TokenFilter(TokenProvider tokenProvider) {
+    public TokenAuthenticationFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
-/*    public TokenFilter(TokenProvider tokenProvider, TokenStateful tokenStateful) {
-        this.tokenProvider = tokenProvider;
-        this.tokenStateful = tokenStateful;
-    }*/
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

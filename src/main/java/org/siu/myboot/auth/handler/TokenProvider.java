@@ -1,10 +1,11 @@
-package org.siu.myboot.auth.jwt;
+package org.siu.myboot.auth.handler;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.model.Token;
 import org.siu.myboot.auth.model.AuthUser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.Authentication;

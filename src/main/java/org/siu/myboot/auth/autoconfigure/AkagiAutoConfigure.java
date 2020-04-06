@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.config.AkagiWebSecurityConfig;
 import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
 import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
-import org.siu.myboot.auth.jwt.TokenProvider;
+import org.siu.myboot.auth.handler.TokenProvider;
 import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
 import org.siu.myboot.auth.service.LoginService;
 import org.siu.myboot.auth.service.PermitService;

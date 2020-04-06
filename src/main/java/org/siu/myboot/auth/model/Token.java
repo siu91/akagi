@@ -1,4 +1,4 @@
-package org.siu.myboot.auth.jwt;
+package org.siu.myboot.auth.model;
 
 import io.jsonwebtoken.*;
 import lombok.Getter;

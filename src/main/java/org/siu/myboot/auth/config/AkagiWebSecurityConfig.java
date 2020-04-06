@@ -3,7 +3,7 @@ package org.siu.myboot.auth.config;
 import org.siu.myboot.auth.autoconfigure.AkagiProperties;
 import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
 import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
-import org.siu.myboot.auth.jwt.TokenProvider;
+import org.siu.myboot.auth.handler.TokenProvider;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
