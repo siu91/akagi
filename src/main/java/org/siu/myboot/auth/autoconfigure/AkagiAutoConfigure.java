@@ -10,6 +10,7 @@ import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
 import org.siu.myboot.auth.service.LoginService;
 import org.siu.myboot.auth.service.PermitService;
 import org.siu.myboot.auth.service.TokenStateful;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -121,8 +122,14 @@ public class AkagiAutoConfigure {
         return permitService;
     }
 
+    /**
+     * 非CS_CLIENT模式才注入bean
+     *
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnExpression("!'${akagi.security.mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiMode).CS_CLIENT.toString().toLowerCase())")
     public LoginService loginService() {
         log.info("初始化-LoginService");
         return new LoginService();
