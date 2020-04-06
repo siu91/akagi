@@ -28,16 +28,7 @@ public class DefaultAuthenticationEntryPoint implements AuthenticationEntryPoint
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
-        // This is invoked when user tries to access a secured REST resource without supplying any credentials
-        // We should just send a 401 Unauthorized response because there is no 'login page' to redirect to
-        // Here you can place any message you want
-        // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-
-        // 认证失败
-        //String uri = request.getRequestURI();
-        //request.getRequestDispatcher(Constant.Auth.AUTH_ERROR_API + "认证失败-[" + uri + "]").forward(request, response);
-
+                         AuthenticationException authException) {
         if (log.isDebugEnabled()) {
             log.debug("Pre-authenticated entry point called. Rejecting access");
         }

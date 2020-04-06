@@ -23,10 +23,6 @@ public class AkagiSecurityConfigurerAdapter extends SecurityConfigurerAdapter<De
     private Set<String> ignorePathPattern;
 
 
-    public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
-
     public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider, Set<String> ignorePathPattern) {
         this.tokenProvider = tokenProvider;
         this.ignorePathPattern = ignorePathPattern;

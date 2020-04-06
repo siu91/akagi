@@ -70,10 +70,6 @@ public class Constant {
          */
         public static final Set<String> PERMIT_ALL_API = new HashSet<String>() {
             {
-                //add(PERMIT_ALL_API1);
-               // add(PERMIT_ALL_API2);
-               // add(PERMIT_ALL_API10);
-                // 测试用
                // add("/config/get");
                // add("/echo");
             }
