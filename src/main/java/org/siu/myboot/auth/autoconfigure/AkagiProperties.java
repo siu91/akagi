@@ -44,7 +44,7 @@ public class AkagiProperties {
     private String superUser;
 
     /**
-     * 开放无需认证的接口
+     * 开放无需认证的接口:支持 Ant Matcher
      */
     private Set<String> permitAll;
 

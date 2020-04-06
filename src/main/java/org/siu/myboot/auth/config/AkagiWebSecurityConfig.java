@@ -93,11 +93,7 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                // 开放权限的接口（登录/注册等）
                 .antMatchers(akagiProperties.getPermitAll().toArray(new String[permitSize])).permitAll()
-                /* 设置API接口对应的权限
-                .antMatchers("/api/普通用户的接口xxxx").hasAuthority("ROLE_USER")
-                .antMatchers("/api/管理员接口xxx").hasAuthority("ROLE_ADMIN")*/
                 // 要求所有进入应用的HTTP请求都要进行认证
                 .anyRequest().authenticated()
                 .and()
@@ -112,6 +108,6 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
      * @return
      */
     private AkagiSecurityConfigurerAdapter securityConfigurerAdapter() {
-        return new AkagiSecurityConfigurerAdapter(tokenProvider);
+        return new AkagiSecurityConfigurerAdapter(tokenProvider, akagiProperties.getPermitAll());
     }
 }

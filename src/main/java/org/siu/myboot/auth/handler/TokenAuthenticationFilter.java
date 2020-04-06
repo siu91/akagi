@@ -7,6 +7,7 @@ import org.siu.myboot.auth.model.Token;
 import org.siu.myboot.auth.service.TokenStateful;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -19,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * token 认证过滤器
@@ -35,8 +39,11 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     @Resource
     private TokenStateful tokenStateful;
 
-    public TokenAuthenticationFilter(TokenProvider tokenProvider) {
+    private List<AntPathRequestMatcher> matchers;
+
+    public TokenAuthenticationFilter(TokenProvider tokenProvider, Set<String> ignorePathPattern) {
         this.tokenProvider = tokenProvider;
+        this.matchers = buildAntPathRequestMatcher(ignorePathPattern);
     }
 
 
@@ -45,9 +52,8 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String jwt = getToken(httpServletRequest);
-        String uri = httpServletRequest.getRequestURI();
 
-        if (!Constant.Auth.NO_CHECK_API.contains(uri) && !ignoreCheckTokenWhenUriAnyMatch(uri)) {
+        if (!ignoreCheckTokenWhenUriAntMatch(httpServletRequest)) {
             // 验证token
             Token token = tokenProvider.validate(jwt);
 
@@ -76,10 +82,10 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
                 // 2、把token中携带的用户权限放入SecurityContextHolder交由  Spring Security管理
                 Authentication authentication = token.authentication();
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.debug("set Authentication to security context for '{}', uri: {}", authentication.getName(), uri);
-                log.info("Authenticated user access:[{}]-[{}]", token.getClaimsJws().getBody().getSubject(), uri);
+                log.debug("set Authentication to security context for '{}', uri: {}", authentication.getName(), httpServletRequest.getRequestURI());
+                log.info("Authenticated user access:[{}]-[{}]", token.getClaimsJws().getBody().getSubject(), httpServletRequest.getRequestURI());
             } else {
-                log.debug("no valid JWT token found, uri: {}", uri);
+                log.debug("no valid JWT token found, uri: {}", httpServletRequest.getRequestURI());
             }
         }
 
@@ -87,15 +93,32 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     }
 
     /**
-     * 忽略token校验，当uri匹配时
-     *
-     * @param uri
+     * @param ignorePathPattern
      * @return
      */
-    private boolean ignoreCheckTokenWhenUriAnyMatch(String uri) {
-        if (StringUtils.hasText(uri)) {
-            return Constant.Auth.NO_CHECK_TOOLS_API.stream().anyMatch(uri::contains);
+    private List<AntPathRequestMatcher> buildAntPathRequestMatcher(Set<String> ignorePathPattern) {
+        List<AntPathRequestMatcher> matchers = new ArrayList<>();
+        ignorePathPattern.forEach(v -> {
+            matchers.add(new AntPathRequestMatcher(v));
+        });
+
+        return matchers;
+
+    }
+
+    /**
+     * 忽略token校验，当uri匹配时
+     *
+     * @param httpServletRequest
+     * @return
+     */
+    private boolean ignoreCheckTokenWhenUriAntMatch(HttpServletRequest httpServletRequest) {
+        for (AntPathRequestMatcher matcher : this.matchers) {
+            if (matcher.matches(httpServletRequest)) {
+                return true;
+            }
         }
+
         return false;
     }
 

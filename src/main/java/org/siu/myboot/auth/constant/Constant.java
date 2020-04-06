@@ -13,10 +13,6 @@ import java.util.Set;
 public class Constant {
 
 
-    public static final String UNKNOWN = "unknown";
-
-
-
     /**
      * redis key
      */
@@ -68,12 +64,6 @@ public class Constant {
         public static final int REFRESH_TOKEN_RENEW_TIME_MS = 60 * 60 * 1000;
 
 
-        /**
-         * 无需token校验的接口
-         */
-        public static final String PERMIT_ALL_API1 = "/v1/api/auth";
-
-
 
         /**
          * 无需权限的接口
@@ -84,34 +74,12 @@ public class Constant {
                // add(PERMIT_ALL_API2);
                // add(PERMIT_ALL_API10);
                 // 测试用
-                add("/config/get");
-                add("/echo");
+               // add("/config/get");
+               // add("/echo");
             }
         };
 
-        /**
-         * 无需校验token
-         */
-        public static final Set<String> NO_CHECK_API = new HashSet<String>() {
-            {
-                add(PERMIT_ALL_API1);
 
-
-            }
-        };
-
-        /**
-         * 不拦截工具的API
-         * swagger、eureka、spring boot admin
-         */
-        public static final Set<String> NO_CHECK_TOOLS_API = new HashSet<String>() {
-            {
-                add("swagger");
-                add("eureka");
-                add("actuator");
-
-            }
-        };
 
 
     }

@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Set;
+
 /**
  * BaseSecurityConfigurer 配置
  * 1、配置token认证拦截器
@@ -18,15 +20,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AkagiSecurityConfigurerAdapter extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     private TokenProvider tokenProvider;
+    private Set<String> ignorePathPattern;
 
 
     public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
+    public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider, Set<String> ignorePathPattern) {
+        this.tokenProvider = tokenProvider;
+        this.ignorePathPattern = ignorePathPattern;
+    }
+
     @Override
     public void configure(HttpSecurity http) {
-        TokenAuthenticationFilter tokenAuthenticationFilter = new TokenAuthenticationFilter(tokenProvider);
+        TokenAuthenticationFilter tokenAuthenticationFilter = new TokenAuthenticationFilter(tokenProvider,ignorePathPattern);
         // 把JWTFilter 放在默认Spring Security UsernamePasswordAuthenticationFilter 前面
         http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
