@@ -19,7 +19,13 @@ import java.util.Set;
  */
 public class AkagiSecurityConfigurerAdapter extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
+    /**
+     * token 提供器
+     */
     private TokenProvider tokenProvider;
+    /**
+     * 忽略校验的路径pattern
+     */
     private Set<String> ignorePathPattern;
 
 

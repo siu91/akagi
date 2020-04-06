@@ -14,6 +14,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * 认证与授权服务
+ * <p>
+ * 1、实现了UserDetailsService.loadUserByUsername()
+ * 2、抽象方法auth提供给子类实现认证与授权业务
+ *
  * @Author Siu
  * @Date 2020/3/4 15:26
  * @Version 0.0.1
@@ -23,6 +28,8 @@ public abstract class AbstractAuthService implements UserDetailsService {
 
 
     /**
+     * 实现UserDetailsService.loadUserByUsername()
+     *
      * @param userLoginId 用户登录的ID（用户、手机等）
      * @return
      */
@@ -44,9 +51,11 @@ public abstract class AbstractAuthService implements UserDetailsService {
 
 
     /**
+     * 认证与授权对象拼装
+     *
      * @param user            登录认证后的用户信息
      * @param userAuthorities 用户的授权信息
-     * @return
+     * @return 用户信息&权限信息
      */
     protected AuthUser buildAuthUser(LoginUser user, List<UserAuthorities> userAuthorities) {
         Set<String> tmp = new HashSet<>();

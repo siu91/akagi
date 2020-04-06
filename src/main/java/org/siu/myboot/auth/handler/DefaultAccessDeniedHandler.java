@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * AccessDeineHandler 用来解决【认证过】的用户访问无权限资源时的异常
+ * DefaultAccessDeniedHandler 用来解决【认证过】的用户访问无权限资源时的异常
  *
  * @Author Siu
  * @Date 2020/3/4 16:09

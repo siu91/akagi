@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.annotation.Resource;
 
 /**
+ * 登录服务
+ *
  * @Author Siu
  * @Date 2020/4/3 22:14
  * @Version 0.0.1
@@ -26,6 +28,25 @@ public class LoginService {
     @Resource
     private AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    /**
+     * 登录
+     *
+     * @param user 用户
+     * @param pass 密码
+     * @return
+     */
+    public String login(String user, String pass) {
+        return this.login(user, pass, false);
+    }
+
+    /**
+     * 登录
+     *
+     * @param user     用户
+     * @param pass     密码
+     * @param remember 是否记住密码
+     * @return
+     */
     public String login(String user, String pass, boolean remember) {
         // 认证，通过并返回权限
         Authentication authentication = authentication(user, pass);
@@ -35,8 +56,15 @@ public class LoginService {
     }
 
 
+    /**
+     * @param username 用户
+     * @param password 密码
+     * @return
+     * @throws BadCredentialsException
+     */
     private Authentication authentication(String username, String password) throws BadCredentialsException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        // 将会会调用 org.siu.myboot.auth.service.AbstractAuthService.loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;

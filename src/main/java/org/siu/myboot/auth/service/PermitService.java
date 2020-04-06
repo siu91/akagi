@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 import java.util.Collection;
 
 /**
- * 自定义接口权限判断
+ * 权限校验服务
  *
  * @Author Siu
  * @Date 2020/3/9 11:00
@@ -27,6 +27,12 @@ public class PermitService {
     private String superUser;
 
 
+    /**
+     * 校验当前用户是否有此权限
+     *
+     * @param perm 权限标识
+     * @return
+     */
     public boolean hasPermit(String perm) {
         if (!StringUtils.hasText(perm)) {
             return false;

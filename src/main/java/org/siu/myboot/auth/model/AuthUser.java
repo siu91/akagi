@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
+ * 认证的用户
+ *
  * @Author Siu
  * @Date 2020/3/7 14:18
  * @Version 0.0.1

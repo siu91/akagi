@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.*;
 import java.io.Serializable;
 
 /**
+ * 默认用redis实现token有状态
+ *
  * @Author Siu
  * @Date 2020/2/21 16:13
  * @Version 0.0.1
@@ -21,6 +23,7 @@ public class DefaultRedisTokenStatefulService implements TokenStateful {
     public DefaultRedisTokenStatefulService(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
+
 
 
     @Override

@@ -3,6 +3,9 @@ package org.siu.myboot.auth.model;
 import lombok.Data;
 
 /**
+ *
+ * 登录用户信息
+ *
  * @Author Siu
  * @Date 2020/4/3 22:00
  * @Version 0.0.1

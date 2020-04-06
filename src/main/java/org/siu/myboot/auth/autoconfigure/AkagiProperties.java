@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * spring security 配置
+ * security 配置
  *
  * @Author Siu
  * @Date 2020/3/12 22:04

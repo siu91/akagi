@@ -1,5 +1,6 @@
 package org.siu.myboot.auth.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.model.AuthUser;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import java.util.Optional;
  * @Version 0.0.1
  */
 @Slf4j
+@UtilityClass
 public class SecurityUtils {
 
     /**

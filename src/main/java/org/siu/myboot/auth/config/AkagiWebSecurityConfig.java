@@ -35,6 +35,9 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     private final DefaultAccessDeniedHandler defaultAccessDeniedHandler;
 
+    /**
+     * 全局配置
+     */
     private final AkagiProperties akagiProperties;
 
     public AkagiWebSecurityConfig(TokenProvider tokenProvider, DefaultAuthenticationEntryPoint authenticationErrorHandler, DefaultAccessDeniedHandler defaultAccessDeniedHandler, AkagiProperties akagiProperties) {

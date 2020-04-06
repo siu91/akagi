@@ -2,6 +2,8 @@ package org.siu.myboot.auth.service;
 
 
 /**
+ * token 有状态
+ *
  * @Author Siu
  * @Date 2020/4/4 12:23
  * @Version 0.0.1

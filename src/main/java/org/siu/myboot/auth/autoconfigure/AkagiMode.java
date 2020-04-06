@@ -1,6 +1,8 @@
 package org.siu.myboot.auth.autoconfigure;
 
 /**
+ * 运行模式
+ *
  * @Author Siu
  * @Date 2020/4/4 11:10
  * @Version 0.0.1

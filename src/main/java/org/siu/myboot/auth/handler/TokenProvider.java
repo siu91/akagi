@@ -16,7 +16,12 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
- * token 生成
+ * token 生成器
+ * 1、生成Json Web Token
+ * 2、校验token
+ * 3、刷新token
+ *
+ * TODO 定期更新 token secret
  *
  * @Author Siu
  * @Date 2020/3/4 15:01
@@ -63,6 +68,8 @@ public class TokenProvider implements InitializingBean {
     }
 
     /**
+     * 生成 JSON Web Token
+     *
      * @param authentication
      * @param rememberMe
      * @return

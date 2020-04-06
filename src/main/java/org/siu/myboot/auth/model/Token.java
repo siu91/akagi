@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
+ * token 对象
+ *
  * @Author Siu
  * @Date 2020/3/5 21:12
  * @Version 0.0.1

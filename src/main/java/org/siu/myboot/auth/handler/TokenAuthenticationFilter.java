@@ -93,6 +93,8 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     }
 
     /**
+     * 创建路径匹配器
+     *
      * @param ignorePathPattern
      * @return
      */
