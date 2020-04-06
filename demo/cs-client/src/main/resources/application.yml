@@ -1,0 +1,6 @@
+akagi:
+  security:
+    # 开放无需认证的接口
+    permit-all:
+      - "/v1/client/api/login"
+    mode: CS_CLIENT
