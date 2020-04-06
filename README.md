@@ -161,34 +161,40 @@
       # 配置同SINGLE模式
       # 可显示配置模式为：CS_SERVER
     akagi:
-          mode: CS_SERVER
-    ```
-  
+          mode: CS_SERVE
+      ```
+      
+      
+      
     - 代码示例
+    
+      ```java
+       // 代码同SINGLE模式
+      ```
   
-    ```java
-      // 代码同SINGLE模式
-    ```
   
-- CLIENT
+  
+  - CLIENT
   
     - 配置
   
-    ```yml
+      ```yml
       akagi:
-      security:
-        # 开放无需认证的接口
-          permit-all:
-          - "/v1/client/api/login"
-        mode: CS_CLIENT
+        security:
+          # 开放无需认证的接口
+            permit-all:
+            - "/v1/client/api/login"
+          mode: CS_CLIENT
       ```
-    
-  - 代码示例
-    
+  
+      
+  
+    - 代码示例
+  
       ```java
       @SpringBootApplication
       public class Application {
-    
+      
           public static void main(String[] args) {
               SpringApplication.run(Application.class, args);
           }
@@ -224,15 +230,13 @@
                   return "success";
       
               }
-      
           }
-      
-      
       }
-      
       ```
+  
       
-      
+  
+  
 
 ## TODO
 
