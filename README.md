@@ -153,29 +153,10 @@
 
 - CS模式接入
 
-  - SERVER
+  - SERVER（同SINGLE模式）
 
-    - 配置
-
-      ```yml
-      # 配置同SINGLE模式
-      # 可显示配置模式为：CS_SERVER
-    akagi:
-          mode: CS_SERVE
-      ```
-      
-      
-      
-    - 代码示例
-    
-      ```java
-       // 代码同SINGLE模式
-      ```
-  
-  
-  
   - CLIENT
-  
+
     - 配置
   
       ```yml
