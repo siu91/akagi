@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.model.JsonWebToken;
 import org.siu.myboot.auth.model.Token;
 import org.siu.myboot.auth.model.AuthUser;
 import org.springframework.beans.factory.InitializingBean;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
  * 1、生成Json Web Token
  * 2、校验token
  * 3、刷新token
- *
+ * <p>
  * TODO 定期更新 token secret
  *
  * @Author Siu
@@ -74,11 +75,21 @@ public class TokenProvider implements InitializingBean {
      * @param rememberMe
      * @return
      */
-    public String buildJWT(Authentication authentication, boolean rememberMe) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(Constant.Auth.AUTHORITIES_SPLIT));
+    public JsonWebToken buildJWTObject(Authentication authentication, boolean rememberMe) {
+        String token = this.buildJWT(authentication, rememberMe);
+        long now = (new Date()).getTime();
+        String refreshToken = this.buildJWT(authentication, new Date(now + 60 * 60 * 24 * 7));
+        return new JsonWebToken(token, refreshToken);
+    }
 
+    /**
+     * 生成 JSON Web Token
+     *
+     * @param authentication
+     * @param rememberMe
+     * @return
+     */
+    public String buildJWT(Authentication authentication, boolean rememberMe) {
         // 过期时间处理
         long now = (new Date()).getTime();
         Date validity;
@@ -87,6 +98,23 @@ public class TokenProvider implements InitializingBean {
         } else {
             validity = new Date(now + this.tokenValidityInSeconds * 1000);
         }
+
+        // 构建token信息
+        return buildJWT(authentication, validity);
+    }
+
+
+    /**
+     * 生成 JSON Web Token
+     *
+     * @param authentication
+     * @param validity
+     * @return
+     */
+    public String buildJWT(Authentication authentication, Date validity) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(Constant.Auth.AUTHORITIES_SPLIT));
 
         long version = -1;
         // 获取用户的版本信息
@@ -113,7 +141,7 @@ public class TokenProvider implements InitializingBean {
                 // 该JWT所面向的用户:放入用户信息（用户名）
                 .setSubject(subject)
                 // 接收该JWT的一方
-               // .setAudience("")
+                // .setAudience("")
                 // 放入权限信息
                 .claim(Constant.Auth.AUTHORITIES_KEY, authorities)
                 // 用户信息版本
