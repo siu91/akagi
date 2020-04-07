@@ -69,6 +69,11 @@ public class AkagiProperties {
      */
     private long jsonWebTokenExpireForRemember = 108000;
 
+    /**
+     * 刷新token权限标识
+     */
+    private String jsonWebTokenRefreshPermit = "SYS:REFRESH_TOKEN";
+
 
     public Set<String> getPermitAll() {
         return permitAll;

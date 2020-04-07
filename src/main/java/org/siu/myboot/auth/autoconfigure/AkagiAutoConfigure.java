@@ -100,7 +100,7 @@ public class AkagiAutoConfigure {
     @ConditionalOnMissingBean
     public TokenProvider tokenProvider() {
         log.info("初始化-TokenProvider");
-        return new TokenProvider(this.properties.getJsonWebTokenBase64Secret(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember());
+        return new TokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenBase64Secret(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember());
     }
 
 

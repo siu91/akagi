@@ -2,8 +2,8 @@ package org.siu.myboot.auth.model;
 
 import io.jsonwebtoken.*;
 import lombok.Getter;
-import org.siu.myboot.auth.model.AuthUser;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.handler.TokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class Token {
+
+    private String provider;
     /**
      * 是否合法
      */
@@ -68,6 +70,7 @@ public class Token {
     public void parser(Key key) {
         if (StringUtils.hasText(this.token)) {
             this.claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(this.token);
+            this.provider = this.claimsJws.getBody().getIssuer();
             this.authVersion = Long.parseLong(this.claimsJws.getBody().get(Constant.Auth.VERSION_KEY).toString());
             this.username = this.claimsJws.getBody().getSubject();
             this.authorized = true;
