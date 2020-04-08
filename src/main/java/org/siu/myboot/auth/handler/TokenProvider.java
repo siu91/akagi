@@ -11,7 +11,10 @@ import org.siu.myboot.auth.model.AuthUser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -124,8 +127,12 @@ public class TokenProvider implements InitializingBean {
      */
     public String buildJWT(Authentication authentication, Date validity, String provider) {
         String authorities;
+        String originAuthorities = null;
         if (REFRESH_TOKEN_PROVIDER.equals(provider)) {
             authorities = this.refreshPermit;
+            originAuthorities = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(Constant.Auth.AUTHORITIES_SPLIT));
         } else {
             authorities = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
@@ -140,17 +147,18 @@ public class TokenProvider implements InitializingBean {
         }
 
         // 构建token信息
-        return buildJWT(authentication.getName(), authorities, validity, version, provider);
+        return buildJWT(authentication.getName(), authorities, originAuthorities, validity, version, provider);
     }
 
 
     /**
      * @param subject
-     * @param authorities
+     * @param authorities       权限标识
+     * @param originAuthorities 源权限标识
      * @param validity
      * @return
      */
-    public String buildJWT(String subject, String authorities, Date validity, long version, String provider) {
+    public String buildJWT(String subject, String authorities, String originAuthorities, Date validity, long version, String provider) {
         // 构建token信息
         return Jwts.builder()
                 // 该JWT的签发者
@@ -161,6 +169,7 @@ public class TokenProvider implements InitializingBean {
                 // .setAudience("")
                 // 放入权限信息
                 .claim(Constant.Auth.AUTHORITIES_KEY, authorities)
+                .claim(Constant.Auth.ORIGIN_AUTHORITIES_KEY, originAuthorities == null ? "" : originAuthorities)
                 // 用户信息版本
                 .claim(Constant.Auth.VERSION_KEY, version)
                 // 签名
@@ -192,12 +201,39 @@ public class TokenProvider implements InitializingBean {
                             Math.max(Constant.Auth.REFRESH_TOKEN_RENEW_TIME_MS, ((claims.getExpiration().getTime() - claims.getIssuedAt().getTime()) / 10));
                     Date validity = new Date(renewTime);
                     log.info("用户[{}]的token快失效了-原失效时间[{}],自动续期到[{}]", token.getClaimsJws().getBody().getSubject(), claims.getExpiration(), validity);
-                    return buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), validity, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), TOKEN_PROVIDER);
+                    return buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), null, validity, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), TOKEN_PROVIDER);
                 }
             }
         }
 
         return "";
+    }
+
+
+    /**
+     * 刷新token
+     *
+     * @return
+     */
+    public JsonWebToken refresh() {
+        //获取RequestAttributes
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        //从获取RequestAttributes中获取HttpServletRequest的信息
+        assert requestAttributes != null;
+        HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+        assert request != null;
+        String bearerToken = request.getHeader(Constant.Auth.AUTHORIZATION_HEADER);
+        bearerToken = bearerToken.substring(Constant.Auth.TOKEN_PREFIX.length());
+
+        Token token = new Token(bearerToken);
+        Claims claims = token.getClaimsJws().getBody();
+
+        Date validity1 = new Date((new Date()).getTime() + this.tokenValidityInSecondsForRememberMe * 1000);
+        Date validity2 = new Date((new Date()).getTime() + 60 * 60 * 24 * 7);
+        String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), TOKEN_PROVIDER);
+        String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), REFRESH_TOKEN_PROVIDER);
+
+        return new JsonWebToken(newToken, newRefreshToken);
     }
 
 

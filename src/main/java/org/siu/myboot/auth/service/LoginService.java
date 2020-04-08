@@ -3,6 +3,7 @@ package org.siu.myboot.auth.service;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
 import org.siu.myboot.auth.handler.TokenProvider;
+import org.siu.myboot.auth.model.JsonWebToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -53,6 +54,15 @@ public class LoginService {
         String jwt = tokenProvider.buildJWT(authentication, remember);
         log.info("认证通过，给用户[{}],颁发token[{}]", user, jwt);
         return Constant.Auth.TOKEN_PREFIX + jwt;
+    }
+
+    /**
+     * 刷新token
+     *
+     * @return
+     */
+    public JsonWebToken refreshToken() {
+        return tokenProvider.refresh();
     }
 
 
