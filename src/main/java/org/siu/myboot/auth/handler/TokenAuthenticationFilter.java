@@ -76,7 +76,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
 
             if (token.isAuthorized()) {
                 // 校验通过，如果token接近过期，可以在这里重新根据业务情况颁发新的token给客户端
-                refreshToken(httpServletResponse, token);
+              //  refreshToken(httpServletResponse, token);
                 // token 验证通过
                 // 1、提取token中携带的权限标识
                 // 2、把token中携带的用户权限放入SecurityContextHolder交由  Spring Security管理
