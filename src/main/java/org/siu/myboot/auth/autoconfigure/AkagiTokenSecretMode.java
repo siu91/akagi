@@ -15,8 +15,13 @@ public enum AkagiTokenSecretMode {
      * 所有用户公用一个 token secret
      */
     PUBLIC,
+
     /**
-     * 每个用户单独的 token secret
+     * 每个用户单独的 token secret(保存在本地)
      */
-    CUSTOM
+    CUSTOM_LOCAL,
+    /**
+     * 每个用户单独的 token secret（保存在redis）
+     */
+    CUSTOM_REDIS
 }

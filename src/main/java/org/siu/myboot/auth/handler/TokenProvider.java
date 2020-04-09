@@ -1,19 +1,19 @@
 package org.siu.myboot.auth.handler;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
 import org.siu.myboot.auth.model.JsonWebToken;
 import org.siu.myboot.auth.model.Token;
 import org.siu.myboot.auth.model.AuthUser;
+import org.siu.myboot.auth.service.ITokenSecretService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
@@ -27,34 +27,28 @@ import java.util.stream.Collectors;
  * <p>
  * TODO 定期更新 token secret
  * TODO 定期更新 token secret 会存在所有用户的都用一个公用值，secret设计成与用户属性相关的值
- *      1、假定 用户与token相关的属性（pass，version（用户信息修改时的版本））
- *      2、登录 时将保存用户的 token secret（保存在redis）
- *      3、校验token时获取 token secret
- *      4、修改密码/修改权限/注销等时 更新 token secret
- *
+ * 1、假定 用户与token相关的属性（pass，version（用户信息修改时的版本））
+ * 2、登录 时将保存用户的 token secret（保存在redis）
+ * 3、校验token时获取 token secret
+ * 4、修改密码/修改权限/注销等时 更新 token secret
  *
  * @Author Siu
  * @Date 2020/3/4 15:01
  * @Version 0.0.1
  */
 @Slf4j
-public class TokenProvider implements InitializingBean {
+public class TokenProvider {
 
     public static final String TOKEN_PROVIDER = "Akagi Token Provider";
     public static final String REFRESH_TOKEN_PROVIDER = "Akagi Refresh Token Provider";
 
+    @Resource
+    ITokenSecretService tokenSecretService;
 
     /**
      * 刷新token权限标识
      */
     private String refreshPermit;
-
-
-    /**
-     * base64-secret
-     * 设置默认值，也可以从配置文件中配置
-     */
-    private String base64Secret;
 
     /**
      * 默认token失效时间
@@ -69,23 +63,15 @@ public class TokenProvider implements InitializingBean {
     private long tokenValidityInSecondsForRememberMe;
 
 
-    public TokenProvider(String refreshPermit, String base64Secret, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe) {
+    public TokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe) {
         this.refreshPermit = refreshPermit;
-        this.base64Secret = base64Secret;
         this.tokenValidityInSeconds = tokenValidityInSeconds;
         this.tokenValidityInSecondsForRememberMe = tokenValidityInSecondsForRememberMe;
     }
 
-    /**
-     * 签名key
-     */
-    private Key key;
 
-
-    @Override
-    public void afterPropertiesSet() {
-        byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+    private Key getKey() {
+        return this.tokenSecretService.getKey();
     }
 
     /**
@@ -179,7 +165,7 @@ public class TokenProvider implements InitializingBean {
                 // 用户信息版本
                 .claim(Constant.Auth.VERSION_KEY, version)
                 // 签名
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(getKey(), SignatureAlgorithm.HS512)
                 // 过期时间
                 .setExpiration(validity)
                 // 生效开始时间
@@ -188,8 +174,6 @@ public class TokenProvider implements InitializingBean {
                 .setIssuedAt(new Date())
                 .compact();
     }
-
-
 
 
     /**
@@ -229,7 +213,7 @@ public class TokenProvider implements InitializingBean {
     public Token validate(String authToken) {
         Token token = new Token(authToken);
         try {
-            token.parser(key);
+            token.parser(getKey());
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT signature.");
             log.trace("Invalid JWT signature trace: ", e);

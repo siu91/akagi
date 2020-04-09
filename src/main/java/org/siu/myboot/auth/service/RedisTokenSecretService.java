@@ -8,60 +8,53 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.*;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * 默认用redis实现token有状态
+ * redis实现token有状态
  *
  * @Author Siu
  * @Date 2020/2/21 16:13
  * @Version 0.0.1
  */
-public class DefaultRedisTokenStatefulService implements TokenStateful {
-    private Logger logger = LoggerFactory.getLogger(DefaultRedisTokenStatefulService.class);
+public class RedisTokenSecretService extends AbstractSecretService {
+    private Logger logger = LoggerFactory.getLogger(RedisTokenSecretService.class);
 
-    private final RedisTemplate redisTemplate;
+    protected SecretCache cache;
 
-    public DefaultRedisTokenStatefulService(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public RedisTokenSecretService(SecretCache cache) {
+        this.cache = cache;
     }
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
 
     @Override
-    public Long getTokenVersion(final String userName) {
+    public String getTokenSecret() {
+        Optional<String> userName = SecurityUtils.getCurrentUsername();
+        String key = Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get();
+        String s = cache.get(key);
+        if (s != null) {
+            return s;
+        }
+
         Object result;
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-        result = operations.get(Constant.RedisKey.USER_AUTH_KEY + userName);
+        result = operations.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
 
         if (result != null) {
-            return Long.parseLong(result.toString());
+            return result.toString();
         }
         return null;
     }
 
-
-    /**
-     * @param userName
-     * @param value
-     * @return
-     */
     @Override
-    public boolean setTokenVersion(final String userName, long value) {
-        boolean result = false;
-        try {
-            ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-            operations.set(Constant.RedisKey.USER_AUTH_KEY + userName, value);
-            result = true;
-        } catch (Exception e) {
-            logger.error("set error: key {}, value {}", Constant.RedisKey.USER_AUTH_KEY + userName, value, e);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean update() {
+    public boolean setTokenSecret() {
         Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
+        currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64()));
         return currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64())).isPresent();
     }
 

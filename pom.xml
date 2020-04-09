@@ -55,6 +55,18 @@
     </properties>
 
     <dependencies>
+
+        <!-- com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.2-jre</version>
+        </dependency>
+        <!--必须开启aop-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <!--lombok 代码工具-->
         <dependency>
             <groupId>org.projectlombok</groupId>

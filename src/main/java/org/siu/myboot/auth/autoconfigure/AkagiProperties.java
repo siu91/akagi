@@ -56,11 +56,6 @@ public class AkagiProperties {
      */
     private Set<String> permitAll;
 
-    /**
-     * 是否让token有状态，默认放入redis，可以实现注销/黑名单
-     */
-    private boolean statefulToken;
-
 
     /**
      * token base64 secret

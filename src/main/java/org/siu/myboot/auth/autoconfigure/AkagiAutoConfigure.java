@@ -6,10 +6,7 @@ import org.siu.myboot.auth.config.AkagiWebSecurityConfig;
 import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
 import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
 import org.siu.myboot.auth.handler.TokenProvider;
-import org.siu.myboot.auth.service.DefaultRedisTokenStatefulService;
-import org.siu.myboot.auth.service.LoginService;
-import org.siu.myboot.auth.service.PermitService;
-import org.siu.myboot.auth.service.TokenStateful;
+import org.siu.myboot.auth.service.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -84,10 +81,15 @@ public class AkagiAutoConfigure {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "stateful-token", havingValue = "true", matchIfMissing = false)
-    public TokenStateful tokenStateful(RedisTemplate redisTemplate) {
-        log.info("初始化-TokenStateful");
-        return new DefaultRedisTokenStatefulService(redisTemplate);
+    public ITokenSecretService tokenStateful() {
+        log.info("初始化-TokenStateful:[{}]", this.properties.getSecretMode());
+        if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_LOCAL)) {
+            return new LocalTokenSecretService(new SecretCache());
+        } else if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_REDIS)) {
+            return new RedisTokenSecretService(new SecretCache());
+        } else {
+            return new DefaultTokenSecretService(this.properties.getJsonWebTokenBase64Secret());
+        }
     }
 
 
@@ -100,7 +102,7 @@ public class AkagiAutoConfigure {
     @ConditionalOnMissingBean
     public TokenProvider tokenProvider() {
         log.info("初始化-TokenProvider");
-        return new TokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenBase64Secret(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember());
+        return new TokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember());
     }
 
 

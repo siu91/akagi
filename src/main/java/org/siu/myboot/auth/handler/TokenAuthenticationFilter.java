@@ -4,7 +4,7 @@ package org.siu.myboot.auth.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
 import org.siu.myboot.auth.model.Token;
-import org.siu.myboot.auth.service.TokenStateful;
+import org.siu.myboot.auth.service.ITokenSecretService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -36,9 +36,6 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
 
 
     private TokenProvider tokenProvider;
-    @Resource
-    private TokenStateful tokenStateful;
-
     private List<AntPathRequestMatcher> matchers;
 
     public TokenAuthenticationFilter(TokenProvider tokenProvider, Set<String> ignorePathPattern) {
@@ -57,26 +54,9 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
             // 验证token
             Token token = tokenProvider.validate(jwt);
 
-            // 验证token版本
-            Long oToken = tokenStateful == null ? null : tokenStateful.getTokenVersion(token.getUsername());
-            if (oToken != null) {
-                long currentAuthVersion = Long.parseLong(oToken.toString());
-                if (currentAuthVersion == 0) {
-                    log.warn("用户已退出登录，请重新登录");
-                    httpServletResponse.sendError(601, "用户已退出登录，请重新登录");
-                    return;
-                }
-                // token中存在auth 版本，但版本过期了
-               /* if (token.getAuthVersion() >= 0 && token.getAuthVersion() < currentAuthVersion) {
-                    log.warn("用户认证信息版本过期，请重新登录");
-                    httpServletResponse.sendError(602, "用户认证信息版本过期，请重新登录");
-                    return;
-                }*/
-            }
-
             if (token.isAuthorized()) {
                 // 校验通过，如果token接近过期，可以在这里重新根据业务情况颁发新的token给客户端
-              //  refreshToken(httpServletResponse, token);
+                //  refreshToken(httpServletResponse, token);
                 // token 验证通过
                 // 1、提取token中携带的权限标识
                 // 2、把token中携带的用户权限放入SecurityContextHolder交由  Spring Security管理
