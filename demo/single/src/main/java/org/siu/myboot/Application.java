@@ -65,7 +65,7 @@ public class Application {
          * @return
          */
         @GetMapping("/refresh_token")
-        @PreAuthorize("@pms.hasPermit('SYS:REFRESH_TOKEN')")
+        @PreAuthorize("@pms.hasRefreshTokenPermit()")
         public Object refreshToken() {
             return loginService.refreshToken();
 

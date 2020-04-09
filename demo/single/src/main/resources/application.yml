@@ -3,4 +3,5 @@ akagi:
     # 开放无需认证的接口
     permit-all:
       - "/v1/api/login"
-      - "/v1/api/register"
+    # 刷新token需要的的权限
+    json-web-token-refresh-permit: "MY_APP_CUSTOM:REFRESH_TOKEN_PERMIT"
