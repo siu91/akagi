@@ -89,7 +89,7 @@ public class TokenProvider implements InitializingBean {
      * @param rememberMe
      * @return
      */
-    public JsonWebToken buildJWTObject(Authentication authentication, boolean rememberMe) {
+    public JsonWebToken buildJsonWebToken(Authentication authentication, boolean rememberMe) {
         String token = this.buildJWT(authentication, rememberMe);
         long now = (new Date()).getTime();
         String refreshToken = this.buildJWT(authentication, new Date(now + 60 * 60 * 24 * 7), REFRESH_TOKEN_PROVIDER);
@@ -103,7 +103,7 @@ public class TokenProvider implements InitializingBean {
      * @param rememberMe
      * @return
      */
-    public String buildJWT(Authentication authentication, boolean rememberMe) {
+    private String buildJWT(Authentication authentication, boolean rememberMe) {
         // 过期时间处理
         long now = (new Date()).getTime();
         Date validity;
@@ -125,7 +125,7 @@ public class TokenProvider implements InitializingBean {
      * @param validity
      * @return
      */
-    public String buildJWT(Authentication authentication, Date validity, String provider) {
+    private String buildJWT(Authentication authentication, Date validity, String provider) {
         String authorities;
         String originAuthorities = null;
         if (REFRESH_TOKEN_PROVIDER.equals(provider)) {
@@ -158,7 +158,7 @@ public class TokenProvider implements InitializingBean {
      * @param validity
      * @return
      */
-    public String buildJWT(String subject, String authorities, String originAuthorities, Date validity, long version, String provider) {
+    private String buildJWT(String subject, String authorities, String originAuthorities, Date validity, long version, String provider) {
         // 构建token信息
         return Jwts.builder()
                 // 该JWT的签发者

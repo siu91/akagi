@@ -1,7 +1,6 @@
 package org.siu.myboot.auth.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.siu.myboot.auth.constant.Constant;
 import org.siu.myboot.auth.handler.TokenProvider;
 import org.siu.myboot.auth.model.JsonWebToken;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,9 +33,9 @@ public class LoginService {
      *
      * @param user 用户
      * @param pass 密码
-     * @return
+     * @return JsonWebToken
      */
-    public String login(String user, String pass) {
+    public JsonWebToken login(String user, String pass) {
         return this.login(user, pass, false);
     }
 
@@ -46,14 +45,13 @@ public class LoginService {
      * @param user     用户
      * @param pass     密码
      * @param remember 是否记住密码
-     * @return
+     * @return JsonWebToken
      */
-    public String login(String user, String pass, boolean remember) {
+    public JsonWebToken login(String user, String pass, boolean remember) {
         // 认证，通过并返回权限
         Authentication authentication = authentication(user, pass);
-        String jwt = tokenProvider.buildJWT(authentication, remember);
-        log.info("认证通过，给用户[{}],颁发token[{}]", user, jwt);
-        return Constant.Auth.TOKEN_PREFIX + jwt;
+        return tokenProvider.buildJsonWebToken(authentication, remember);
+
     }
 
     /**
@@ -74,7 +72,7 @@ public class LoginService {
      */
     private Authentication authentication(String username, String password) throws BadCredentialsException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        // 将会会调用 org.siu.myboot.auth.service.AbstractAuthService.loadUserByUsername
+        // 将会会调用 AbstractAuthService.loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
