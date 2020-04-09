@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *      1、假定 用户与token相关的属性（pass，version（用户信息修改时的版本））
  *      2、登录 时将保存用户的 token secret（保存在redis）
  *      3、校验token时获取 token secret
- *      4、修改密码/注销等时 更新 token secret
+ *      4、修改密码/修改权限/注销等时 更新 token secret
  *
  *
  * @Author Siu
@@ -146,10 +146,10 @@ public class TokenProvider implements InitializingBean {
         }
 
 
-        long version = -1;
+        Object version = -1;
         // 获取用户的版本信息
         if (authentication.getPrincipal() instanceof AuthUser) {
-            version = ((AuthUser) authentication.getPrincipal()).getTokenVersion();
+            version = ((AuthUser) authentication.getPrincipal()).getVersion();
         }
 
         // 构建token信息
@@ -164,7 +164,7 @@ public class TokenProvider implements InitializingBean {
      * @param validity
      * @return
      */
-    private String buildJWT(String subject, String authorities, String originAuthorities, Date validity, long version, String provider) {
+    private String buildJWT(String subject, String authorities, String originAuthorities, Date validity, Object version, String provider) {
         // 构建token信息
         return Jwts.builder()
                 // 该JWT的签发者

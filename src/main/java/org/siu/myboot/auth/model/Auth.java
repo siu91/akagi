@@ -14,7 +14,14 @@ import java.util.List;
 @Data
 public class Auth {
 
+    /**
+     * 用户
+     */
     private LoginUser user;
-    private List<UserAuthorities> authorities;
+
+    /**
+     * 权限
+     */
+    private List<Authorities> authorities;
 
 }

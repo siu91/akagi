@@ -4,7 +4,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * 认证的用户
@@ -17,35 +16,19 @@ public class AuthUser extends User {
 
 
     /**
-     * 更新版本
+     * 版本
      */
-    private long tokenVersion = -1;
+    private Object version;
 
-    /**
-     * 认证&授权的时间
-     */
-    private Date authTime;
 
-    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, long tokenVersion) {
+    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Object version) {
         super(username, password, authorities);
-        this.tokenVersion = tokenVersion;
+        this.version = version;
     }
 
-    public AuthUser(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long tokenVersion) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.tokenVersion = tokenVersion;
+
+    public Object getVersion() {
+        return version;
     }
 
-    public long getTokenVersion() {
-        return tokenVersion;
-    }
-
-    public Date getAuthTime() {
-        return authTime;
-    }
-
-    public AuthUser setAuthTime(Date authTime) {
-        this.authTime = authTime;
-        return this;
-    }
 }

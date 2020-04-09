@@ -10,12 +10,7 @@ import lombok.Data;
  * @Version 0.0.1
  */
 @Data
-public class UserAuthorities {
-
-    /**
-     * 角色ID
-     */
-    private Long roleId;
+public class Authorities {
 
     /**
      * 角色标识

@@ -3,8 +3,8 @@ package org.siu.myboot.auth.service;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.model.Auth;
 import org.siu.myboot.auth.model.AuthUser;
+import org.siu.myboot.auth.model.Authorities;
 import org.siu.myboot.auth.model.LoginUser;
-import org.siu.myboot.auth.model.UserAuthorities;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,7 +49,6 @@ public abstract class AbstractAuthService implements UserDetailsService {
      */
     public abstract Auth auth(final String userLoginId);
 
-
     /**
      * 认证与授权对象拼装
      *
@@ -57,9 +56,9 @@ public abstract class AbstractAuthService implements UserDetailsService {
      * @param userAuthorities 用户的授权信息
      * @return 用户信息&权限信息
      */
-    protected AuthUser buildAuthUser(LoginUser user, List<UserAuthorities> userAuthorities) {
+    protected AuthUser buildAuthUser(LoginUser user, List<Authorities> userAuthorities) {
         Set<String> tmp = new HashSet<>();
-        for (UserAuthorities authorities : userAuthorities) {
+        for (Authorities authorities : userAuthorities) {
             if (authorities.getRole() != null) {
                 tmp.add(authorities.getRole());
             }
@@ -75,6 +74,6 @@ public abstract class AbstractAuthService implements UserDetailsService {
             }
         }.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
-        return new AuthUser(user.getId(), user.getPass(), grantedAuthorities, user.getTokenVersion());
+        return new AuthUser(user.getId(), user.getPass(), grantedAuthorities, user.getV());
     }
 }

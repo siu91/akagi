@@ -55,7 +55,7 @@ public class Token {
     /**
      * 认证授权版本
      */
-    private long authVersion = -1;
+    private Object authVersion = -1;
 
 
     public Token(String token) {
@@ -71,7 +71,7 @@ public class Token {
         if (StringUtils.hasText(this.token)) {
             this.claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(this.token);
             this.provider = this.claimsJws.getBody().getIssuer();
-            this.authVersion = Long.parseLong(this.claimsJws.getBody().get(Constant.Auth.VERSION_KEY).toString());
+            this.authVersion = this.claimsJws.getBody().get(Constant.Auth.VERSION_KEY);
             this.username = this.claimsJws.getBody().getSubject();
             this.authorized = true;
         }
@@ -105,7 +105,7 @@ public class Token {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        AuthUser principal = new AuthUser(claims.getSubject(), "", authorities, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()));
+        AuthUser principal = new AuthUser(claims.getSubject(), "", authorities, claims.get(Constant.Auth.VERSION_KEY));
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

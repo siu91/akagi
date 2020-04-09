@@ -1,0 +1,22 @@
+package org.siu.myboot.auth.autoconfigure;
+
+/**
+ * Token Secret 模式
+ *
+ * 默认
+ *
+ * @Author Siu
+ * @Date 2020/4/4 11:10
+ * @Version 0.0.1
+ */
+public enum AkagiTokenSecretMode {
+
+    /**
+     * 所有用户公用一个 token secret
+     */
+    PUBLIC,
+    /**
+     * 每个用户单独的 token secret
+     */
+    CUSTOM
+}
