@@ -82,7 +82,7 @@ public class AkagiAutoConfigure {
     @Bean
     @ConditionalOnMissingBean
     public ITokenSecretService tokenStateful() {
-        log.info("初始化-TokenStateful:[{}]", this.properties.getSecretMode());
+        log.info("初始化-TokenSecretService:[{}]", this.properties.getSecretMode());
         if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_LOCAL)) {
             return new LocalTokenSecretService(new SecretCache());
         } else if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_REDIS)) {
