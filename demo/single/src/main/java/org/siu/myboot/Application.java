@@ -14,10 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -63,14 +60,14 @@ public class Application {
 
 
         /**
-         * 接口使用权限控制
+         * 刷新token接口（接口使用权限控制）
          *
          * @return
          */
-        @PostMapping("/test")
-        @PreAuthorize("@pms.hasPermit('USER')")
-        public Object test() {
-            return "success";
+        @GetMapping("/refresh_token")
+        @PreAuthorize("@pms.hasPermit('SYS:REFRESH_TOKEN')")
+        public Object refreshToken() {
+            return loginService.refreshToken();
 
         }
 

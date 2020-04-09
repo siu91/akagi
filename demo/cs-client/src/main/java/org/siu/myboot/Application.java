@@ -34,9 +34,12 @@ public class Application {
          * @return
          */
         @PostMapping("/login")
-        public String login() {
+        public Object login() {
             // 请求服务端（CS_SERVER）获取token
-            return "token";
+            return "{\n" +
+                    "    \"token\": \"Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJBa2FnaSBUb2tlbiBQcm92aWRlciIsInN1YiI6InNpdSIsImF1dGgiOiJVU0VSLFVTRVI6VVBEQVRFIiwib19hdXRoIjoiIiwidmVyc2lvbiI6NSwiZXhwIjoxNTg2NDg0MTMwLCJuYmYiOjE1ODYzOTc3MzEsImlhdCI6MTU4NjM5NzczMX0.cKTH6mk59B2_Y1BOEhrf5fTvrbSAxS2ijehK19GKeo47GC4mie8XKl1nKSMMeU1fvLKzkb1s-qYnMpq_D6R97g\",\n" +
+                    "    \"refreshToken\": \"Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJBa2FnaSBSZWZyZXNoIFRva2VuIFByb3ZpZGVyIiwic3ViIjoic2l1IiwiYXV0aCI6IlNZUzpSRUZSRVNIX1RPS0VOIiwib19hdXRoIjoiVVNFUixVU0VSOlVQREFURSIsInZlcnNpb24iOjUsImV4cCI6MTU4NjM5ODMzNiwibmJmIjoxNTg2Mzk3NzMxLCJpYXQiOjE1ODYzOTc3MzF9.FzYfDLr39OoMsnxm3DPuIIwCQXNCn2jsvm_JK43t2sX65ljN2Ao0FnKTGTBk-MbXWCe1DEo0dIsq13bgMuvPKg\"\n" +
+                    "}";
         }
 
 
