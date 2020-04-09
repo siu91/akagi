@@ -124,19 +124,6 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
         return false;
     }
 
-    /**
-     * 刷新token
-     *
-     * @param httpServletResponse
-     * @param token
-     */
-    private void refreshToken(HttpServletResponse httpServletResponse, Token token) {
-        String newJWT = tokenProvider.refresh(token);
-        if (StringUtils.hasText(newJWT)) {
-            httpServletResponse.setHeader(Constant.Auth.AUTHORIZATION_HEADER, Constant.Auth.TOKEN_PREFIX + newJWT);
-        }
-
-    }
 
     /**
      * 从请求头中获取token

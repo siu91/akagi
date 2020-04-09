@@ -184,30 +184,6 @@ public class TokenProvider implements InitializingBean {
     }
 
 
-    /**
-     * 给快过期的token续期
-     *
-     * @param token 原token
-     * @return
-     */
-    public String refresh(Token token) {
-        // 默认策略：续期为原有效时间的十分之一
-        if (token.isAuthorized()) {
-            Claims claims = token.getClaimsJws().getBody();
-            // 如果快失效了半小时
-            if ((claims.getExpiration().getTime() - System.currentTimeMillis()) < Constant.Auth.REFRESH_TOKEN_TIME_THRESHOLD_MS) {
-                if (claims.getExpiration() != null && claims.getNotBefore() != null) {
-                    long renewTime = claims.getExpiration().getTime() +
-                            Math.max(Constant.Auth.REFRESH_TOKEN_RENEW_TIME_MS, ((claims.getExpiration().getTime() - claims.getIssuedAt().getTime()) / 10));
-                    Date validity = new Date(renewTime);
-                    log.info("用户[{}]的token快失效了-原失效时间[{}],自动续期到[{}]", token.getClaimsJws().getBody().getSubject(), claims.getExpiration(), validity);
-                    return buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), null, validity, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), TOKEN_PROVIDER);
-                }
-            }
-        }
-
-        return "";
-    }
 
 
     /**
@@ -225,11 +201,12 @@ public class TokenProvider implements InitializingBean {
         String bearerToken = request.getHeader(Constant.Auth.AUTHORIZATION_HEADER);
         bearerToken = bearerToken.substring(Constant.Auth.TOKEN_PREFIX.length());
 
-        Token token = new Token(bearerToken);
+        Token token = validate(bearerToken);
         Claims claims = token.getClaimsJws().getBody();
 
-        Date validity1 = new Date((new Date()).getTime() + this.tokenValidityInSecondsForRememberMe * 1000);
-        Date validity2 = new Date((new Date()).getTime() + 60 * 60 * 24 * 7);
+        long now = (new Date()).getTime();
+        Date validity1 = new Date(now + this.tokenValidityInSecondsForRememberMe * 1000);
+        Date validity2 = new Date(now + 60 * 60 * 24 * 7);
         String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), TOKEN_PROVIDER);
         String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), REFRESH_TOKEN_PROVIDER);
 
