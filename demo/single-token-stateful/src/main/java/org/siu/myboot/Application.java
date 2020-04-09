@@ -59,17 +59,6 @@ public class Application {
         }
 
 
-        /**
-         * 刷新token接口（接口使用权限控制）
-         *
-         * @return
-         */
-        @GetMapping("/refresh_token")
-        @PreAuthorize("@pms.hasRefreshTokenPermit()")
-        public Object refreshToken() {
-            return loginService.refreshToken();
-
-        }
 
 
     }

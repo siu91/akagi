@@ -97,6 +97,19 @@
                 public Object login(@Validated @RequestBody Login login) {
                     return loginService.login(login.getUsername(), login.getPassword(), false);
                 }
+                
+                
+                /**
+                 * 刷新token接口（接口使用权限控制）
+                 *
+                 * @return
+                 */
+                @GetMapping("/refresh_token")
+                @PreAuthorize("@pms.hasRefreshTokenPermit()")
+                public Object refreshToken() {
+                    return loginService.refreshToken();
+    
+                }
         
         
                 /**
