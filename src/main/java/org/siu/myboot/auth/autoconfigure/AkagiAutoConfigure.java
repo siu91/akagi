@@ -116,8 +116,7 @@ public class AkagiAutoConfigure {
     @Bean("pms")
     @ConditionalOnMissingBean
     public PermitService permitService() {
-        PermitService permitService = new PermitService();
-        permitService.setSuperUser(this.properties.getSuperUser());
+        PermitService permitService = new PermitService(this.properties.getSuperUser(), this.properties.getJsonWebTokenRefreshPermit());
         log.info("初始化-PermitService");
         return permitService;
     }
