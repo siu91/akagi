@@ -23,9 +23,15 @@ public class PermitService {
     /**
      * 超级管理员拥有最高权限
      */
-    @Setter
     private String superUser;
 
+    private String refreshTokenPermit;
+
+
+    public PermitService(String superUser, String refreshTokenPermit) {
+        this.superUser = superUser;
+        this.refreshTokenPermit = refreshTokenPermit;
+    }
 
     /**
      * 校验当前用户是否有此权限
@@ -49,5 +55,15 @@ public class PermitService {
                 .filter(StringUtils::hasText)
                 .anyMatch(x -> x.equals(superUser) || PatternMatchUtils.simpleMatch(perm, x));
     }
+
+    /**
+     * 是否有刷新token的权限
+     *
+     * @return
+     */
+    public boolean hasRefreshTokenPermit() {
+        return this.hasPermit(this.refreshTokenPermit);
+    }
+
 }
 
