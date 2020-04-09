@@ -70,7 +70,7 @@ public class AkagiProperties {
     private long jsonWebTokenExpireForRemember = 108000;
 
     /**
-     * 刷新token权限标识
+     * 刷新token权限标识，默认："SYS:REFRESH_TOKEN"
      */
     private String jsonWebTokenRefreshPermit = Constant.Auth.JSON_WEB_TOKEN_REFRESH_PERMIT;
 
