@@ -29,6 +29,12 @@ public class Constant {
      * 认证、授权常量定义
      */
     public static class Auth {
+
+        /**
+         * jwt刷新权限标识
+         */
+        public static final String JSON_WEB_TOKEN_REFRESH_PERMIT = "SYS:REFRESH_TOKEN";
+
         /**
          * 请求头token参数
          */
@@ -65,18 +71,15 @@ public class Constant {
         public static final int REFRESH_TOKEN_RENEW_TIME_MS = 60 * 60 * 1000;
 
 
-
         /**
          * 无需权限的接口
          */
         public static final Set<String> PERMIT_ALL_API = new HashSet<String>() {
             {
-               // add("/config/get");
-               // add("/echo");
+                // add("/config/get");
+                // add("/echo");
             }
         };
-
-
 
 
     }

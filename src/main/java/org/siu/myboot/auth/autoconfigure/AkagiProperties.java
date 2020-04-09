@@ -72,7 +72,7 @@ public class AkagiProperties {
     /**
      * 刷新token权限标识
      */
-    private String jsonWebTokenRefreshPermit = "SYS:REFRESH_TOKEN";
+    private String jsonWebTokenRefreshPermit = Constant.Auth.JSON_WEB_TOKEN_REFRESH_PERMIT;
 
 
     public Set<String> getPermitAll() {
