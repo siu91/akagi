@@ -26,6 +26,12 @@ import java.util.stream.Collectors;
  * 3、刷新token
  * <p>
  * TODO 定期更新 token secret
+ * TODO 定期更新 token secret 会存在所有用户的都用一个公用值，secret设计成与用户属性相关的值
+ *      1、假定 用户与token相关的属性（pass，version（用户信息修改时的版本））
+ *      2、登录 时将保存用户的 token secret（保存在redis）
+ *      3、校验token时获取 token secret
+ *      4、修改密码/注销等时 更新 token secret
+ *
  *
  * @Author Siu
  * @Date 2020/3/4 15:01
