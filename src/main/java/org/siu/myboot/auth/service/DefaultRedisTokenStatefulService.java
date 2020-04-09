@@ -2,11 +2,14 @@ package org.siu.myboot.auth.service;
 
 
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.model.AuthUser;
+import org.siu.myboot.auth.util.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.*;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * 默认用redis实现token有状态
@@ -23,7 +26,6 @@ public class DefaultRedisTokenStatefulService implements TokenStateful {
     public DefaultRedisTokenStatefulService(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
-
 
 
     @Override
@@ -57,5 +59,23 @@ public class DefaultRedisTokenStatefulService implements TokenStateful {
         return result;
     }
 
+    @Override
+    public boolean update() {
+        Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
+        return currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64())).isPresent();
+    }
+
+
+    public boolean set(final String key, Object value) {
+        boolean result = false;
+        try {
+            ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+            operations.set(key, value);
+            result = true;
+        } catch (Exception e) {
+            logger.error("set error: key {}, value {}", key, value, e);
+        }
+        return result;
+    }
 
 }

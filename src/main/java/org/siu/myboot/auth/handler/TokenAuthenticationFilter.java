@@ -67,11 +67,11 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
                     return;
                 }
                 // token中存在auth 版本，但版本过期了
-                if (token.getAuthVersion() >= 0 && token.getAuthVersion() < currentAuthVersion) {
+               /* if (token.getAuthVersion() >= 0 && token.getAuthVersion() < currentAuthVersion) {
                     log.warn("用户认证信息版本过期，请重新登录");
                     httpServletResponse.sendError(602, "用户认证信息版本过期，请重新登录");
                     return;
-                }
+                }*/
             }
 
             if (token.isAuthorized()) {

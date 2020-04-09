@@ -26,4 +26,6 @@ public interface TokenStateful {
      * @return
      */
     boolean setTokenVersion(final String user, long value);
+
+    boolean update();
 }
