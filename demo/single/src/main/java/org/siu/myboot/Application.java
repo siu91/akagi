@@ -57,7 +57,7 @@ public class Application {
          * @return
          */
         @PostMapping("/login")
-        public String login(@Validated @RequestBody Login login) {
+        public Object login(@Validated @RequestBody Login login) {
             return loginService.login(login.getUsername(), login.getPassword(), false);
         }
 
