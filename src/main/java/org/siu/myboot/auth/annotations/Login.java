@@ -4,14 +4,16 @@ import java.lang.annotation.*;
 
 
 /**
- * token secret 更新
+ * 登录
+ * <p>
+ * 保存 token secret key
  *
  * @Author Siu
  * @Date 2020/3/19 21:07
  * @Version 0.0.1
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface TokenSecretUpdate {
+public @interface Login {
 }

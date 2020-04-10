@@ -51,6 +51,7 @@ public class AuthUser extends User {
         for (Object o : v) {
             properties.add(o.toString());
         }
+        properties.add(Constant.Auth.JSON_WEB_TOKEN_BASE64_SECRET);
 
 
         String base64Str = Joiner.on(Constant.Auth.BASE64_SECRET_SPLIT).skipNulls().join(properties);
