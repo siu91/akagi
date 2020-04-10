@@ -9,7 +9,7 @@ package org.siu.myboot.auth.autoconfigure;
  * @Date 2020/4/4 11:10
  * @Version 0.0.1
  */
-public enum AkagiTokenSecretMode {
+public enum AkagiTokenSecretKeyMode {
 
     /**
      * 所有用户公用一个 token secret

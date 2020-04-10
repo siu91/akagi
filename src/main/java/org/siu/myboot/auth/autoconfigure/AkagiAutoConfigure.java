@@ -51,7 +51,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnExpression("!'${akagi.security.secret-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretMode).CUSTOM_REDIS.toString().toLowerCase())")
+    @ConditionalOnExpression("!'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
@@ -66,7 +66,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnExpression("!'${akagi.security.secret-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretMode).CUSTOM_REDIS.toString().toLowerCase())")
+    @ConditionalOnExpression("!'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         // 配置序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
@@ -85,12 +85,12 @@ public class AkagiAutoConfigure {
     @Bean
     @ConditionalOnMissingBean
     public TokenProvider tokenProvider() {
-        log.info("初始化-TokenProvider:[{}]", this.properties.getSecretMode());
+        log.info("初始化-TokenProvider:[{}]", this.properties.getTokenSecretKeyMode());
 
-        if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_LOCAL)) {
-            return new LocalTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new SecretCache());
-        } else if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_REDIS)) {
-            return new RedisTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new SecretCache());
+        if (this.properties.getTokenSecretKeyMode().equals(AkagiTokenSecretKeyMode.CUSTOM_LOCAL)) {
+            return new LocalTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new TokenSecretKeyCache());
+        } else if (this.properties.getTokenSecretKeyMode().equals(AkagiTokenSecretKeyMode.CUSTOM_REDIS)) {
+            return new RedisTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new TokenSecretKeyCache());
         } else {
             return new DefaultTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), this.properties.getJsonWebTokenBase64Secret());
         }

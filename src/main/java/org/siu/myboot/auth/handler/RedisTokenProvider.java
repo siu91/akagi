@@ -3,7 +3,6 @@ package org.siu.myboot.auth.handler;
 
 import org.siu.myboot.auth.constant.Constant;
 import org.siu.myboot.auth.model.AuthUser;
-import org.siu.myboot.auth.service.SecretCache;
 import org.siu.myboot.auth.util.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +10,7 @@ import org.springframework.data.redis.core.*;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
+import java.security.Key;
 import java.util.Optional;
 
 /**
@@ -23,9 +23,9 @@ import java.util.Optional;
 public class RedisTokenProvider extends AbstractTokenProvider {
     private Logger logger = LoggerFactory.getLogger(RedisTokenProvider.class);
 
-    protected SecretCache cache;
+    protected TokenSecretKeyCache cache;
 
-    public RedisTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe, SecretCache cache) {
+    public RedisTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe, TokenSecretKeyCache cache) {
         super(refreshPermit, tokenValidityInSeconds, tokenValidityInSecondsForRememberMe);
         this.cache = cache;
     }
@@ -35,10 +35,16 @@ public class RedisTokenProvider extends AbstractTokenProvider {
 
 
     @Override
-    public String getTokenSecret() {
+    public boolean setKey() {
+        Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
+        currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), toKey(authUser.toBase64())));
+        return currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64())).isPresent();
+    }
+
+    @Override
+    public Key getKey() {
         Optional<String> userName = SecurityUtils.getCurrentUsername();
-        String key = Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get();
-        String s = cache.get(key);
+        Key s = cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
         if (s != null) {
             return s;
         }
@@ -48,16 +54,9 @@ public class RedisTokenProvider extends AbstractTokenProvider {
         result = operations.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
 
         if (result != null) {
-            return result.toString();
+            return toKey(result.toString());
         }
         return null;
-    }
-
-    @Override
-    public boolean setSecret() {
-        Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
-        currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64()));
-        return currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64())).isPresent();
     }
 
 

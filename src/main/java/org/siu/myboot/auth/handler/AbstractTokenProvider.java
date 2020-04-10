@@ -67,7 +67,17 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     }
 
 
-    @Override
+    /**
+     *
+     * @param base64
+     * @return
+     */
+    protected Key toKey(String base64) {
+        byte[] keyBytes = Decoders.BASE64.decode(base64);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+/*    @Override
     public Key getKey() {
         String secret = getTokenSecret();
         byte[] keyBytes = Decoders.BASE64.decode(secret);
@@ -75,12 +85,18 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     }
 
 
+    *//**
+     *
+     * @return
+     *//*
+    protected abstract Key doGetKey();*/
+
     /**
      * 获取 token secret
      *
      * @return
      */
-    protected abstract String getTokenSecret();
+    //protected abstract String getTokenSecret();
 
     /**
      * 生成 JSON Web Token

@@ -2,11 +2,10 @@ package org.siu.myboot.auth.handler;
 
 
 import org.siu.myboot.auth.constant.Constant;
-import org.siu.myboot.auth.handler.AbstractTokenProvider;
 import org.siu.myboot.auth.model.AuthUser;
-import org.siu.myboot.auth.service.SecretCache;
 import org.siu.myboot.auth.util.SecurityUtils;
 
+import java.security.Key;
 import java.util.Optional;
 
 /**
@@ -18,29 +17,32 @@ import java.util.Optional;
  */
 public class LocalTokenProvider extends AbstractTokenProvider {
 
-    protected SecretCache cache;
+    protected TokenSecretKeyCache cache;
 
-    public LocalTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe,SecretCache cache) {
+    public LocalTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe, TokenSecretKeyCache cache) {
         super(refreshPermit, tokenValidityInSeconds, tokenValidityInSecondsForRememberMe);
         this.cache = cache;
     }
 
-    @Override
-    public String getTokenSecret() {
-        Optional<String> userName = SecurityUtils.getCurrentUsername();
-        return cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
-    }
 
     @Override
-    public boolean setSecret() {
+    public boolean setKey() {
         Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
         if (currentUser.isPresent()) {
-            cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + currentUser.get().getUsername(), currentUser.get().toBase64());
+            String base64 = currentUser.get().toBase64();
+            Key key = toKey(base64);
+            cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + currentUser.get().getUsername(), key);
             return true;
         } else {
             return false;
         }
 
+    }
+
+    @Override
+    public Key getKey() {
+        Optional<String> userName = SecurityUtils.getCurrentUsername();
+        return cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
     }
 
 

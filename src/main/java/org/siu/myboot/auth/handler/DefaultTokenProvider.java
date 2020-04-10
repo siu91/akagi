@@ -3,7 +3,6 @@ package org.siu.myboot.auth.handler;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.siu.myboot.auth.handler.AbstractTokenProvider;
 
 import java.security.Key;
 
@@ -31,13 +30,9 @@ public class DefaultTokenProvider extends AbstractTokenProvider {
         return this.key;
     }
 
-    @Override
-    public String getTokenSecret() {
-        return this.secret;
-    }
 
     @Override
-    public boolean setSecret() {
+    public boolean setKey() {
         // do nothing
         return true;
     }

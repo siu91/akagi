@@ -18,11 +18,11 @@ public interface TokenProvider {
 
 
     /**
-     * 设置token secret
+     * 设置token secret key
      *
      * @return
      */
-    boolean setSecret();
+    boolean setKey();
 
     /**
      * 获取token secret key
@@ -41,12 +41,15 @@ public interface TokenProvider {
     Token validate(String jwt);
 
     /**
+     * 生成 jwt 对象
+     *
      * @param authentication
      * @return
      */
     JsonWebToken buildJsonWebToken(Authentication authentication);
 
     /**
+     * 生成 jwt对象
      *
      * @param authentication
      * @param rememberMe

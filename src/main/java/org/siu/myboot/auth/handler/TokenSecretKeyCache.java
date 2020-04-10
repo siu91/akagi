@@ -1,19 +1,21 @@
-package org.siu.myboot.auth.service;
+package org.siu.myboot.auth.handler;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
+import java.security.Key;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 自定义切点：缓存已经匹配的方法
+ * token secret key 缓存
  *
  * @Author Siu
  * @Date 2020/3/29 15:01
  * @Version 0.0.1
  */
-public class SecretCache {
+public class TokenSecretKeyCache {
 
-    protected static final Cache<String, String> CACHE = CacheBuilder.newBuilder()
+    protected static final Cache<String, Key> CACHE = CacheBuilder.newBuilder()
             //设置cache的初始大小
             .initialCapacity(10)
             // 缓存的最大大小
@@ -36,7 +38,7 @@ public class SecretCache {
      * @param key
      * @return
      */
-    public String get(String key) {
+    public Key get(String key) {
         return CACHE.getIfPresent(key);
     }
 
@@ -47,7 +49,7 @@ public class SecretCache {
      * @param key
      * @param value
      */
-    public void set(String key, String value) {
+    public void set(String key, Key value) {
         CACHE.put(key, value);
     }
 

@@ -39,12 +39,12 @@ public class AkagiProperties {
     private AkagiMode mode = AkagiMode.SINGLE;
 
     /**
-     * Token Secret 模式
+     * Token Secret Key 模式
      * PUBLIC : 所有用户公用一个 token secret
      * CUSTOM : 每个用户单独的 token secret
      *
      */
-    private AkagiTokenSecretMode secretMode = AkagiTokenSecretMode.PUBLIC;
+    private AkagiTokenSecretKeyMode tokenSecretKeyMode = AkagiTokenSecretKeyMode.PUBLIC;
 
     /**
      * 超级用户
