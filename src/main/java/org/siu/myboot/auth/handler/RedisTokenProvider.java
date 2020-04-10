@@ -35,6 +35,14 @@ public class RedisTokenProvider extends AbstractTokenProvider {
 
 
     @Override
+    public void removeKey() {
+        Optional<String> user = SecurityUtils.getCurrentUsername();
+        String username = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get();
+        cache.remove(username);
+        remove(username);
+    }
+
+    @Override
     public boolean setKey() {
         Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
         currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), toKey(authUser.toBase64())));
@@ -70,6 +78,11 @@ public class RedisTokenProvider extends AbstractTokenProvider {
             logger.error("set error: key {}, value {}", key, value, e);
         }
         return result;
+    }
+
+
+    public void remove(final String key) {
+        redisTemplate.delete(key);
     }
 
 }

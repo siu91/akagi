@@ -26,6 +26,13 @@ public class LocalTokenProvider extends AbstractTokenProvider {
 
 
     @Override
+    public void removeKey() {
+        Optional<String> user = SecurityUtils.getCurrentUsername();
+        cache.remove(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get());
+    }
+
+
+    @Override
     public boolean setKey() {
         Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
         if (currentUser.isPresent()) {

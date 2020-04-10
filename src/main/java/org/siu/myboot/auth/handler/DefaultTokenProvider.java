@@ -32,6 +32,11 @@ public class DefaultTokenProvider extends AbstractTokenProvider {
 
 
     @Override
+    public void removeKey() {
+        // do nothing
+    }
+
+    @Override
     public boolean setKey() {
         // do nothing
         return true;

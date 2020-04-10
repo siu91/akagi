@@ -53,4 +53,13 @@ public class TokenSecretKeyCache {
         CACHE.put(key, value);
     }
 
+    /**
+     * 删除
+     *
+     * @param key
+     */
+    public void remove(String key) {
+        CACHE.invalidate(key);
+    }
+
 }
