@@ -32,7 +32,7 @@ public class DefaultAuthenticationEntryPoint implements AuthenticationEntryPoint
             log.debug("Pre-authenticated entry point called. Rejecting access");
         }
 
-        response.sendError(403, "Access Denied");
+        response.sendError(403, authException.getMessage());
 
     }
 }

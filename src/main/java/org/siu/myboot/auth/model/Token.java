@@ -62,9 +62,14 @@ public class Token {
 
 
     public Token(String token) {
-        String[] ts = token.split(Constant.Auth.TOKEN_SPLIT);
-        this.username = new String(Base64.getDecoder().decode(ts[0]));
-        this.token = Joiner.on(Constant.Auth.TOKEN_SPLIT).skipNulls().join(ts[1], ts[2], ts[3]);
+        String[] ts = token.split(Constant.Auth.TOKEN_SPLIT_REGEX);
+        Assert.isTrue(ts.length == 4, "Token has been tampered");
+        try {
+            this.username = new String(Base64.getDecoder().decode(ts[0]));
+            this.token = Joiner.on(Constant.Auth.TOKEN_SPLIT).skipNulls().join(ts[1], ts[2], ts[3]);
+        } catch (IllegalArgumentException e) {
+            this.error = "Token has been tampered";
+        }
     }
 
     /**
@@ -78,6 +83,7 @@ public class Token {
             this.provider = this.claimsJws.getBody().getIssuer();
             this.username = this.claimsJws.getBody().getSubject();
             if (this.claimsJws.getBody().getSubject().equals(this.username)) {
+                this.error = "Token has been tampered";
                 this.authorized = true;
             }
 

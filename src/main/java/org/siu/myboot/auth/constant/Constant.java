@@ -59,6 +59,7 @@ public class Constant {
          * token 分割符
          */
         public static final String TOKEN_SPLIT = ".";
+        public static final String TOKEN_SPLIT_REGEX = "\\.";
 
         /**
          * token中权限信息key

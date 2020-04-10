@@ -88,7 +88,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     public JsonWebToken buildJsonWebToken(Authentication authentication, boolean rememberMe) {
         String token = this.buildJWT(authentication, rememberMe);
         long now = (new Date()).getTime();
-        String refreshToken = this.buildJWT(authentication, new Date(now + 60 * 60 * 24 * 7), REFRESH_TOKEN_PROVIDER);
+        String refreshToken = this.buildJWT(authentication, new Date(now + 60 * 60 * 24 * 7 * 1000), REFRESH_TOKEN_PROVIDER);
         String user = ((AuthUser) authentication.getPrincipal()).getUsername();
         return new JsonWebToken(user, token, refreshToken);
     }
@@ -194,11 +194,13 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         bearerToken = bearerToken.substring(Constant.Auth.TOKEN_PREFIX.length());
 
         Token token = validate(bearerToken);
+        if (!token.isAuthorized()) {
+            return null;
+        }
         Claims claims = token.getClaimsJws().getBody();
-
         long now = (new Date()).getTime();
         Date validity1 = new Date(now + this.tokenValidityInSecondsForRememberMe * 1000);
-        Date validity2 = new Date(now + 60 * 60 * 24 * 7);
+        Date validity2 = new Date(now + 60 * 60 * 24 * 7 * 1000);
         String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, TOKEN_PROVIDER);
         String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, REFRESH_TOKEN_PROVIDER);
 
@@ -216,7 +218,12 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     public Token validate(String authToken) {
         Token token = new Token(authToken);
         try {
-            token.parser(getKey(token.getUsername()));
+            Key key = getKey(token.getUsername());
+            if (key != null) {
+                token.parser(key);
+            } else {
+                token.setError("Token Secret Key is null");
+            }
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             token.setError("Invalid JWT signature.");
             log.trace("Invalid JWT signature trace: ", e);
