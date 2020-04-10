@@ -77,26 +77,6 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-/*    @Override
-    public Key getKey() {
-        String secret = getTokenSecret();
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-
-    *//**
-     *
-     * @return
-     *//*
-    protected abstract Key doGetKey();*/
-
-    /**
-     * 获取 token secret
-     *
-     * @return
-     */
-    //protected abstract String getTokenSecret();
 
     /**
      * 生成 JSON Web Token
@@ -161,15 +141,8 @@ public abstract class AbstractTokenProvider implements TokenProvider {
                     .collect(Collectors.joining(Constant.Auth.AUTHORITIES_SPLIT));
         }
 
-
-        Object version = -1;
-        // 获取用户的版本信息
-        if (authentication.getPrincipal() instanceof AuthUser) {
-            version = ((AuthUser) authentication.getPrincipal()).getVersion();
-        }
-
         // 构建token信息
-        return buildJWT(authentication.getName(), authorities, originAuthorities, validity, version, provider);
+        return buildJWT(authentication.getName(), authorities, originAuthorities, validity, provider);
     }
 
 
@@ -180,7 +153,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * @param validity
      * @return
      */
-    protected String buildJWT(String subject, String authorities, String originAuthorities, Date validity, Object version, String provider) {
+    protected String buildJWT(String subject, String authorities, String originAuthorities, Date validity, String provider) {
         // 构建token信息
         return Jwts.builder()
                 // 该JWT的签发者
@@ -192,8 +165,6 @@ public abstract class AbstractTokenProvider implements TokenProvider {
                 // 放入权限信息
                 .claim(Constant.Auth.AUTHORITIES_KEY, authorities)
                 .claim(Constant.Auth.ORIGIN_AUTHORITIES_KEY, originAuthorities == null ? "" : originAuthorities)
-                // 用户信息版本
-                .claim(Constant.Auth.VERSION_KEY, version)
                 // 签名
                 .signWith(getKey(), SignatureAlgorithm.HS512)
                 // 过期时间
@@ -228,8 +199,8 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         long now = (new Date()).getTime();
         Date validity1 = new Date(now + this.tokenValidityInSecondsForRememberMe * 1000);
         Date validity2 = new Date(now + 60 * 60 * 24 * 7);
-        String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), TOKEN_PROVIDER);
-        String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, Long.parseLong(claims.get(Constant.Auth.VERSION_KEY).toString()), REFRESH_TOKEN_PROVIDER);
+        String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, TOKEN_PROVIDER);
+        String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, REFRESH_TOKEN_PROVIDER);
 
         return new JsonWebToken(newToken, newRefreshToken);
     }

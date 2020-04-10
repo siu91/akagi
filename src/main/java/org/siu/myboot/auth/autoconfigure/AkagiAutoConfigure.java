@@ -51,7 +51,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnExpression("!'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
+    @ConditionalOnExpression("'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
@@ -66,7 +66,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnExpression("!'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
+    @ConditionalOnExpression("'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         // 配置序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();

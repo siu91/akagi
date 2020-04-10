@@ -58,11 +58,6 @@ public class Token {
      */
     private Authentication authenticationToken;
 
-    /**
-     * 认证授权版本
-     */
-    private Object authVersion = -1;
-
 
     public Token(String token) {
         this.token = token;
@@ -77,7 +72,6 @@ public class Token {
         if (StringUtils.hasText(this.token)) {
             this.claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(this.token);
             this.provider = this.claimsJws.getBody().getIssuer();
-            this.authVersion = this.claimsJws.getBody().get(Constant.Auth.VERSION_KEY);
             this.username = this.claimsJws.getBody().getSubject();
             this.authorized = true;
         }
@@ -111,7 +105,7 @@ public class Token {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        AuthUser principal = new AuthUser(claims.getSubject(), "", authorities, claims.get(Constant.Auth.VERSION_KEY));
+        AuthUser principal = new AuthUser(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

@@ -18,6 +18,11 @@ public interface TokenProvider {
 
 
     /**
+     * 移除Key
+     */
+    void removeKey();
+
+    /**
      * 设置token secret key
      *
      * @return

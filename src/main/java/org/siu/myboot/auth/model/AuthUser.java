@@ -2,14 +2,12 @@ package org.siu.myboot.auth.model;
 
 import com.google.common.base.Joiner;
 import io.jsonwebtoken.io.Encoders;
+import lombok.Setter;
 import org.siu.myboot.auth.constant.Constant;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * 认证的用户
@@ -22,19 +20,20 @@ public class AuthUser extends User {
 
 
     /**
-     * 版本
+     * 用户属性
      */
-    private Object version;
+    @Setter
+    private Object[] v;
 
 
-    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Object version) {
+    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Object... v) {
         super(username, password, authorities);
-        this.version = version;
+        this.v = v;
     }
 
 
-    public Object getVersion() {
-        return version;
+    public Object[] getV() {
+        return v;
     }
 
     /**
@@ -43,15 +42,16 @@ public class AuthUser extends User {
      * @return
      */
     public String toBase64() {
-        List<String> properties = new ArrayList<>();
+        List<String> properties = new LinkedList<>();
         this.getAuthorities().forEach(a -> {
             properties.add(a.getAuthority());
         });
         Collections.sort(properties);
-
         properties.add(getUsername());
-        properties.add(getPassword());
-        properties.add(this.version.toString());
+        for (Object o : v) {
+            properties.add(o.toString());
+        }
+
 
         String base64Str = Joiner.on(Constant.Auth.BASE64_SECRET_SPLIT).skipNulls().join(properties);
 

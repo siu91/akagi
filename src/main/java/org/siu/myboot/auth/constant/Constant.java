@@ -21,8 +21,7 @@ public class Constant {
         /**
          * 用于认证授权版本号
          */
-        public static final String USER_AUTH_KEY = "AKAGI:AUTH:USER_AUTH_VERSION:";
-        public static final String USER_TOKEN_SECRET_KEY = "AKAGI:AUTH:USER_TOKEN_SECRET:";
+        public static final String USER_TOKEN_SECRET_KEY = "AKAGI:AUTH:UTSK:";
     }
 
 
@@ -45,7 +44,7 @@ public class Constant {
         /**
          * jwt刷新权限标识
          */
-        public static final String JSON_WEB_TOKEN_REFRESH_PERMIT = "SYS:REFRESH_TOKEN";
+        public static final String JSON_WEB_TOKEN_REFRESH_PERMIT = "AKAGI:SYS:RT";
 
         /**
          * 请求头token参数
@@ -64,24 +63,9 @@ public class Constant {
         public static final String ORIGIN_AUTHORITIES_KEY = "o_auth";
 
         /**
-         * token用户的版本信息key
-         */
-        public static final String VERSION_KEY = "version";
-        /**
          * token中权限信息分割符
          */
         public static final String AUTHORITIES_SPLIT = ",";
-
-        /**
-         * 刷新token临界值（毫秒）
-         */
-        public static final int REFRESH_TOKEN_TIME_THRESHOLD_MS = 30 * 60 * 1000;
-
-        /**
-         * 每次刷新token最小增加续租时间（毫米）
-         */
-        public static final int REFRESH_TOKEN_RENEW_TIME_MS = 60 * 60 * 1000;
-
 
         /**
          * 无需权限的接口

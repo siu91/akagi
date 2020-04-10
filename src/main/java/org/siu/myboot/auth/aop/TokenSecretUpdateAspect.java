@@ -32,7 +32,7 @@ public class TokenSecretUpdateAspect {
 
     @Around("annotation()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
-        TokenProvider.setKey();
+        TokenProvider.removeKey();
         return point.proceed();
     }
 
