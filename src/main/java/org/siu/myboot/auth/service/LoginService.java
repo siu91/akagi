@@ -57,6 +57,13 @@ public class LoginService {
     }
 
     /**
+     * 注销
+     */
+    public void logout() {
+        tokenProvider.removeKey();
+    }
+
+    /**
      * 刷新token
      *
      * @return
