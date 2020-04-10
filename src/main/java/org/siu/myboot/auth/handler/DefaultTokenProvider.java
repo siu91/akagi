@@ -26,7 +26,7 @@ public class DefaultTokenProvider extends AbstractTokenProvider {
     }
 
     @Override
-    public Key getKey() {
+    public Key getKey(String s) {
         return this.key;
     }
 

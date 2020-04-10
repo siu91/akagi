@@ -47,9 +47,8 @@ public class LocalTokenProvider extends AbstractTokenProvider {
     }
 
     @Override
-    public Key getKey() {
-        Optional<String> userName = SecurityUtils.getCurrentUsername();
-        return cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
+    public Key getKey(String user) {
+        return cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user);
     }
 
 

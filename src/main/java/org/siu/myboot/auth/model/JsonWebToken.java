@@ -3,6 +3,8 @@ package org.siu.myboot.auth.model;
 import lombok.Getter;
 import org.siu.myboot.auth.constant.Constant;
 
+import java.util.Base64;
+
 /**
  * Json Web Token
  *
@@ -24,8 +26,10 @@ public class JsonWebToken {
     @Getter
     private String refreshToken;
 
-    public JsonWebToken(String token, String refreshToken) {
-        this.token = Constant.Auth.TOKEN_PREFIX + token;
-        this.refreshToken = Constant.Auth.TOKEN_PREFIX + refreshToken;
+    public JsonWebToken(String username, String token, String refreshToken) {
+        this.token = Constant.Auth.TOKEN_PREFIX + Base64.getEncoder().encodeToString(username.getBytes()) + Constant.Auth.TOKEN_SPLIT + token;
+        this.refreshToken = Constant.Auth.TOKEN_PREFIX + Base64.getEncoder().encodeToString(username.getBytes()) + Constant.Auth.TOKEN_SPLIT + refreshToken;
     }
+
+
 }

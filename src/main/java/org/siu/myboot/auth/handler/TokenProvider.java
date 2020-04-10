@@ -34,7 +34,7 @@ public interface TokenProvider {
      *
      * @return
      */
-    Key getKey();
+    Key getKey(String usename);
 
 
     /**

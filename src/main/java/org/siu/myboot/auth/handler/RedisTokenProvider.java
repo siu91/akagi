@@ -50,16 +50,15 @@ public class RedisTokenProvider extends AbstractTokenProvider {
     }
 
     @Override
-    public Key getKey() {
-        Optional<String> userName = SecurityUtils.getCurrentUsername();
-        Key s = cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
+    public Key getKey(String user) {
+        Key s = cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user);
         if (s != null) {
             return s;
         }
 
         Object result;
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-        result = operations.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + userName.get());
+        result = operations.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user);
 
         if (result != null) {
             return toKey(result.toString());

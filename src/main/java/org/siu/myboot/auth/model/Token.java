@@ -1,5 +1,6 @@
 package org.siu.myboot.auth.model;
 
+import com.google.common.base.Joiner;
 import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -60,7 +62,9 @@ public class Token {
 
 
     public Token(String token) {
-        this.token = token;
+        String[] ts = token.split(Constant.Auth.TOKEN_SPLIT);
+        this.username = new String(Base64.getDecoder().decode(ts[0]));
+        this.token = Joiner.on(Constant.Auth.TOKEN_SPLIT).skipNulls().join(ts[1], ts[2], ts[3]);
     }
 
     /**
@@ -73,7 +77,10 @@ public class Token {
             this.claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(this.token);
             this.provider = this.claimsJws.getBody().getIssuer();
             this.username = this.claimsJws.getBody().getSubject();
-            this.authorized = true;
+            if (this.claimsJws.getBody().getSubject().equals(this.username)) {
+                this.authorized = true;
+            }
+
         }
     }
 

@@ -55,6 +55,10 @@ public class Constant {
          * token 前缀
          */
         public static final String TOKEN_PREFIX = "Bearer ";
+        /**
+         * token 分割符
+         */
+        public static final String TOKEN_SPLIT = ".";
 
         /**
          * token中权限信息key

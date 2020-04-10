@@ -68,7 +68,6 @@ public abstract class AbstractTokenProvider implements TokenProvider {
 
 
     /**
-     *
      * @param base64
      * @return
      */
@@ -90,7 +89,8 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         String token = this.buildJWT(authentication, rememberMe);
         long now = (new Date()).getTime();
         String refreshToken = this.buildJWT(authentication, new Date(now + 60 * 60 * 24 * 7), REFRESH_TOKEN_PROVIDER);
-        return new JsonWebToken(token, refreshToken);
+        String user = ((AuthUser) authentication.getPrincipal()).getUsername();
+        return new JsonWebToken(user, token, refreshToken);
     }
 
     @Override
@@ -166,7 +166,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
                 .claim(Constant.Auth.AUTHORITIES_KEY, authorities)
                 .claim(Constant.Auth.ORIGIN_AUTHORITIES_KEY, originAuthorities == null ? "" : originAuthorities)
                 // 签名
-                .signWith(getKey(), SignatureAlgorithm.HS512)
+                .signWith(getKey(subject), SignatureAlgorithm.HS512)
                 // 过期时间
                 .setExpiration(validity)
                 // 生效开始时间
@@ -202,7 +202,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, TOKEN_PROVIDER);
         String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, REFRESH_TOKEN_PROVIDER);
 
-        return new JsonWebToken(newToken, newRefreshToken);
+        return new JsonWebToken(claims.getSubject(), newToken, newRefreshToken);
     }
 
 
@@ -216,7 +216,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     public Token validate(String authToken) {
         Token token = new Token(authToken);
         try {
-            token.parser(getKey());
+            token.parser(getKey(token.getUsername()));
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             token.setError("Invalid JWT signature.");
             log.trace("Invalid JWT signature trace: ", e);
