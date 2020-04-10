@@ -1,8 +1,9 @@
-package org.siu.myboot.auth.service;
+package org.siu.myboot.auth.handler;
 
 
 import org.siu.myboot.auth.constant.Constant;
 import org.siu.myboot.auth.model.AuthUser;
+import org.siu.myboot.auth.service.SecretCache;
 import org.siu.myboot.auth.util.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +20,13 @@ import java.util.Optional;
  * @Date 2020/2/21 16:13
  * @Version 0.0.1
  */
-public class RedisTokenSecretService extends AbstractSecretService {
-    private Logger logger = LoggerFactory.getLogger(RedisTokenSecretService.class);
+public class RedisTokenProvider extends AbstractTokenProvider {
+    private Logger logger = LoggerFactory.getLogger(RedisTokenProvider.class);
 
     protected SecretCache cache;
 
-    public RedisTokenSecretService(SecretCache cache) {
+    public RedisTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe, SecretCache cache) {
+        super(refreshPermit, tokenValidityInSeconds, tokenValidityInSecondsForRememberMe);
         this.cache = cache;
     }
 
@@ -52,7 +54,7 @@ public class RedisTokenSecretService extends AbstractSecretService {
     }
 
     @Override
-    public boolean setTokenSecret() {
+    public boolean setSecret() {
         Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
         currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64()));
         return currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64())).isPresent();

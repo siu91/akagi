@@ -1,9 +1,10 @@
-package org.siu.myboot.auth.service;
+package org.siu.myboot.auth.handler;
 
 
-import com.google.common.cache.Cache;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.handler.AbstractTokenProvider;
 import org.siu.myboot.auth.model.AuthUser;
+import org.siu.myboot.auth.service.SecretCache;
 import org.siu.myboot.auth.util.SecurityUtils;
 
 import java.util.Optional;
@@ -15,11 +16,12 @@ import java.util.Optional;
  * @Date 2020/2/21 16:13
  * @Version 0.0.1
  */
-public class LocalTokenSecretService  extends AbstractSecretService {
+public class LocalTokenProvider extends AbstractTokenProvider {
 
     protected SecretCache cache;
 
-    public LocalTokenSecretService(SecretCache cache) {
+    public LocalTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe,SecretCache cache) {
+        super(refreshPermit, tokenValidityInSeconds, tokenValidityInSecondsForRememberMe);
         this.cache = cache;
     }
 
@@ -30,7 +32,7 @@ public class LocalTokenSecretService  extends AbstractSecretService {
     }
 
     @Override
-    public boolean setTokenSecret() {
+    public boolean setSecret() {
         Optional<AuthUser> currentUser = SecurityUtils.getCurrentUser();
         if (currentUser.isPresent()) {
             cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + currentUser.get().getUsername(), currentUser.get().toBase64());

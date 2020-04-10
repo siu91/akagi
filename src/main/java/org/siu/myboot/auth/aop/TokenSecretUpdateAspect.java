@@ -5,7 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.siu.myboot.auth.service.ITokenSecretService;
+import org.siu.myboot.auth.handler.TokenProvider;
 
 import javax.annotation.Resource;
 
@@ -21,19 +21,18 @@ import javax.annotation.Resource;
 public class TokenSecretUpdateAspect {
 
     @Resource
-    private ITokenSecretService ITokenSecretService;
+    private TokenProvider TokenProvider;
 
     /**
      * 定义切入点:匹配带Log注解的方法
      */
     @Pointcut("@annotation(org.siu.myboot.auth.annotations.TokenSecretUpdate)")
-    public void annotation() {
-    }
+    public void annotation() {}
 
 
     @Around("annotation()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
-        ITokenSecretService.setTokenSecret();
+        TokenProvider.setSecret();
         return point.proceed();
     }
 

@@ -3,9 +3,7 @@ package org.siu.myboot.auth.autoconfigure;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.config.AkagiWebSecurityConfig;
-import org.siu.myboot.auth.handler.DefaultAccessDeniedHandler;
-import org.siu.myboot.auth.handler.DefaultAuthenticationEntryPoint;
-import org.siu.myboot.auth.handler.TokenProvider;
+import org.siu.myboot.auth.handler.*;
 import org.siu.myboot.auth.service.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -53,7 +51,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "stateful-token", havingValue = "true", matchIfMissing = false)
+    @ConditionalOnExpression("!'${akagi.security.secret-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretMode).CUSTOM_REDIS.toString().toLowerCase())")
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
@@ -68,7 +66,7 @@ public class AkagiAutoConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = AkagiProperties.PREFIX, name = "stateful-token", havingValue = "true", matchIfMissing = false)
+    @ConditionalOnExpression("!'${akagi.security.secret-mode}'.toLowerCase().equals(T(org.siu.myboot.auth.autoconfigure.AkagiTokenSecretMode).CUSTOM_REDIS.toString().toLowerCase())")
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         // 配置序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
@@ -76,20 +74,6 @@ public class AkagiAutoConfigure {
 
         log.info("初始化-RedisCacheManager");
         return RedisCacheManager.builder(factory).cacheDefaults(redisCacheConfiguration).build();
-    }
-
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ITokenSecretService tokenSecretService() {
-        log.info("初始化-TokenSecretService:[{}]", this.properties.getSecretMode());
-        if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_LOCAL)) {
-            return new LocalTokenSecretService(new SecretCache());
-        } else if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_REDIS)) {
-            return new RedisTokenSecretService(new SecretCache());
-        } else {
-            return new DefaultTokenSecretService(this.properties.getJsonWebTokenBase64Secret());
-        }
     }
 
 
@@ -101,8 +85,15 @@ public class AkagiAutoConfigure {
     @Bean
     @ConditionalOnMissingBean
     public TokenProvider tokenProvider() {
-        log.info("初始化-TokenProvider");
-        return new TokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember());
+        log.info("初始化-TokenProvider:[{}]", this.properties.getSecretMode());
+
+        if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_LOCAL)) {
+            return new LocalTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new SecretCache());
+        } else if (this.properties.getSecretMode().equals(AkagiTokenSecretMode.CUSTOM_REDIS)) {
+            return new RedisTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new SecretCache());
+        } else {
+            return new DefaultTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), this.properties.getJsonWebTokenBase64Secret());
+        }
     }
 
 

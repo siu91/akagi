@@ -2,8 +2,8 @@ package org.siu.myboot.auth.model;
 
 import io.jsonwebtoken.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.siu.myboot.auth.constant.Constant;
-import org.siu.myboot.auth.handler.TokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,6 +31,12 @@ public class Token {
      * 是否合法
      */
     private boolean authorized;
+
+    /**
+     * 错误信息
+     */
+    @Setter
+    private String error;
 
     /**
      * token 字符串
