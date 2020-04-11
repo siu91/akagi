@@ -31,6 +31,11 @@ public class Constant {
     public static class Auth {
 
         /**
+         * 默认 refresh token 失效时间
+         */
+        public static final long DEFAULT_REFRESH_TOKEN_EXPIRE_MS = 60 * 60 * 24 * 7 * 1000;
+
+        /**
          * token secret 属性分割符
          */
         public static final String BASE64_SECRET_SPLIT = ":";
