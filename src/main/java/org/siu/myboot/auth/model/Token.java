@@ -62,6 +62,7 @@ public class Token {
 
 
     public Token(String token) {
+        Assert.isTrue(StringUtils.hasText(token), "Token is null");
         String[] ts = token.split(Constant.Auth.TOKEN_SPLIT_REGEX);
         Assert.isTrue(ts.length == 4, "Token has been tampered");
         try {
@@ -78,16 +79,14 @@ public class Token {
      * @param key
      */
     public void parser(Key key) {
-        if (StringUtils.hasText(this.token)) {
-            this.claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(this.token);
-            this.provider = this.claimsJws.getBody().getIssuer();
-            this.username = this.claimsJws.getBody().getSubject();
-            if (this.claimsJws.getBody().getSubject().equals(this.username)) {
-                this.error = "Token has been tampered";
-                this.authorized = true;
-            }
-
+        this.claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(this.token);
+        this.provider = this.claimsJws.getBody().getIssuer();
+        this.username = this.claimsJws.getBody().getSubject();
+        if (this.claimsJws.getBody().getSubject().equals(this.username)) {
+            this.error = "Token has been tampered";
+            this.authorized = true;
         }
+
     }
 
 

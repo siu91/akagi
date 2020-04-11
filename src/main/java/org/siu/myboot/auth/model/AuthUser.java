@@ -2,12 +2,12 @@ package org.siu.myboot.auth.model;
 
 import com.google.common.base.Joiner;
 import io.jsonwebtoken.io.Encoders;
-import lombok.Setter;
 import org.siu.myboot.auth.constant.Constant;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 认证的用户
@@ -22,18 +22,27 @@ public class AuthUser extends User {
     /**
      * 用户属性
      */
-    @Setter
-    private Object[] v;
+    private List<Object> v = new LinkedList<>();
 
 
     public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Object... v) {
         super(username, password, authorities);
-        this.v = v;
+        this.v.add(Constant.Auth.JSON_WEB_TOKEN_BASE64_SECRET);
+        this.v.addAll(this.getAuthorities().stream().map(GrantedAuthority::getAuthority).sorted().collect(Collectors.toList()));
+        this.v.add(username);
+        if (v != null) {
+            this.v.addAll(Arrays.asList(v));
+        }
     }
 
+    /**
+     * 添加用户属性
+     *
+     * @param v
+     */
+    public void v(Object v) {
+        this.v.add(v);
 
-    public Object[] getV() {
-        return v;
     }
 
     /**
@@ -42,20 +51,7 @@ public class AuthUser extends User {
      * @return
      */
     public String toBase64() {
-        List<String> properties = new LinkedList<>();
-        this.getAuthorities().forEach(a -> {
-            properties.add(a.getAuthority());
-        });
-        Collections.sort(properties);
-        properties.add(getUsername());
-        for (Object o : v) {
-            properties.add(o.toString());
-        }
-        properties.add(Constant.Auth.JSON_WEB_TOKEN_BASE64_SECRET);
-
-
-        String base64Str = Joiner.on(Constant.Auth.BASE64_SECRET_SPLIT).skipNulls().join(properties);
-
+        String base64Str = Joiner.on(Constant.Auth.BASE64_SECRET_SPLIT).skipNulls().join(this.v);
         return Encoders.BASE64.encode(base64Str.getBytes());
     }
 }

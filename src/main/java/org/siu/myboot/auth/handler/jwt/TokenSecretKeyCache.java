@@ -1,4 +1,4 @@
-package org.siu.myboot.auth.handler;
+package org.siu.myboot.auth.handler.jwt;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

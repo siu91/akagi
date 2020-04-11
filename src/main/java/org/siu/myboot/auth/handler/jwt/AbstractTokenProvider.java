@@ -1,11 +1,11 @@
-package org.siu.myboot.auth.handler;
+package org.siu.myboot.auth.handler.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
-import org.siu.myboot.auth.model.JsonWebToken;
+import org.siu.myboot.auth.model.JWT;
 import org.siu.myboot.auth.model.Token;
 import org.siu.myboot.auth.model.AuthUser;
 import org.springframework.security.core.Authentication;
@@ -68,6 +68,8 @@ public abstract class AbstractTokenProvider implements TokenProvider {
 
 
     /**
+     * 生成Key
+     *
      * @param base64
      * @return
      */
@@ -85,16 +87,16 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * @return
      */
     @Override
-    public JsonWebToken buildJsonWebToken(Authentication authentication, boolean rememberMe) {
+    public JWT buildJsonWebToken(Authentication authentication, boolean rememberMe) {
         String token = this.buildJWT(authentication, rememberMe);
         long now = (new Date()).getTime();
         String refreshToken = this.buildJWT(authentication, new Date(now + 60 * 60 * 24 * 7 * 1000), REFRESH_TOKEN_PROVIDER);
         String user = ((AuthUser) authentication.getPrincipal()).getUsername();
-        return new JsonWebToken(user, token, refreshToken);
+        return new JWT(user, token, refreshToken);
     }
 
     @Override
-    public JsonWebToken buildJsonWebToken(Authentication authentication) {
+    public JWT buildJsonWebToken(Authentication authentication) {
         return this.buildJsonWebToken(authentication, false);
     }
 
@@ -183,7 +185,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * @return
      */
     @Override
-    public JsonWebToken refresh() {
+    public JWT refresh() {
         //获取RequestAttributes
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         //从获取RequestAttributes中获取HttpServletRequest的信息
@@ -204,7 +206,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, TOKEN_PROVIDER);
         String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, REFRESH_TOKEN_PROVIDER);
 
-        return new JsonWebToken(claims.getSubject(), newToken, newRefreshToken);
+        return new JWT(claims.getSubject(), newToken, newRefreshToken);
     }
 
 

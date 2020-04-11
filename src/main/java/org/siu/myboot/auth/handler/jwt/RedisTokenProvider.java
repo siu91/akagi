@@ -1,4 +1,4 @@
-package org.siu.myboot.auth.handler;
+package org.siu.myboot.auth.handler.jwt;
 
 
 import org.siu.myboot.auth.constant.Constant;
@@ -37,9 +37,11 @@ public class RedisTokenProvider extends AbstractTokenProvider {
     @Override
     public void removeKey() {
         Optional<String> user = SecurityUtils.getCurrentUsername();
-        String username = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get();
-        cache.remove(username);
-        remove(username);
+        if (user.isPresent()) {
+            String username = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get();
+            cache.remove(username);
+            remove(username);
+        }
     }
 
     @Override

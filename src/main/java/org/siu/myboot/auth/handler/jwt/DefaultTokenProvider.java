@@ -1,4 +1,4 @@
-package org.siu.myboot.auth.handler;
+package org.siu.myboot.auth.handler.jwt;
 
 
 import io.jsonwebtoken.io.Decoders;

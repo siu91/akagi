@@ -1,7 +1,7 @@
-package org.siu.myboot.auth.handler;
+package org.siu.myboot.auth.handler.jwt;
 
 
-import org.siu.myboot.auth.model.JsonWebToken;
+import org.siu.myboot.auth.model.JWT;
 import org.siu.myboot.auth.model.Token;
 import org.springframework.security.core.Authentication;
 
@@ -51,7 +51,7 @@ public interface TokenProvider {
      * @param authentication
      * @return
      */
-    JsonWebToken buildJsonWebToken(Authentication authentication);
+    JWT buildJsonWebToken(Authentication authentication);
 
     /**
      * 生成 jwt对象
@@ -60,12 +60,12 @@ public interface TokenProvider {
      * @param rememberMe
      * @return
      */
-    JsonWebToken buildJsonWebToken(Authentication authentication, boolean rememberMe);
+    JWT buildJsonWebToken(Authentication authentication, boolean rememberMe);
 
     /**
      * 刷新token
      *
      * @return
      */
-    JsonWebToken refresh();
+    JWT refresh();
 }

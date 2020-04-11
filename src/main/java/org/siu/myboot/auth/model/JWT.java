@@ -12,7 +12,7 @@ import java.util.Base64;
  * @Date 2020/4/7 20:19
  * @Version 0.0.1
  */
-public class JsonWebToken {
+public class JWT {
 
     /**
      * 用于验证获取服务端资源
@@ -24,11 +24,11 @@ public class JsonWebToken {
      * 用于客户端主动刷新token
      */
     @Getter
-    private String refreshToken;
+    private String refresh;
 
-    public JsonWebToken(String username, String token, String refreshToken) {
+    public JWT(String username, String token, String refresh) {
         this.token = Constant.Auth.TOKEN_PREFIX + Base64.getEncoder().encodeToString(username.getBytes()) + Constant.Auth.TOKEN_SPLIT + token;
-        this.refreshToken = Constant.Auth.TOKEN_PREFIX + Base64.getEncoder().encodeToString(username.getBytes()) + Constant.Auth.TOKEN_SPLIT + refreshToken;
+        this.refresh = Constant.Auth.TOKEN_PREFIX + Base64.getEncoder().encodeToString(username.getBytes()) + Constant.Auth.TOKEN_SPLIT + refresh;
     }
 
 

@@ -1,4 +1,4 @@
-package org.siu.myboot.auth.handler;
+package org.siu.myboot.auth.handler.jwt;
 
 
 import org.siu.myboot.auth.constant.Constant;
@@ -28,7 +28,7 @@ public class LocalTokenProvider extends AbstractTokenProvider {
     @Override
     public void removeKey() {
         Optional<String> user = SecurityUtils.getCurrentUsername();
-        cache.remove(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get());
+        user.ifPresent(s -> cache.remove(Constant.RedisKey.USER_TOKEN_SECRET_KEY + s));
     }
 
 
