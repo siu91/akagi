@@ -2,6 +2,8 @@ package org.siu.myboot.auth.autoconfigure;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.siu.myboot.auth.aop.UTSKAnnotationAdvisor;
+import org.siu.myboot.auth.aop.UTSKAnnotationInterceptor;
 import org.siu.myboot.auth.config.AkagiWebSecurityConfig;
 import org.siu.myboot.auth.handler.*;
 import org.siu.myboot.auth.handler.jwt.*;
@@ -23,7 +25,6 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
@@ -139,6 +140,20 @@ public class AkagiAutoConfigure {
     public PasswordEncoder passwordEncoder() throws IllegalAccessException, InstantiationException {
         log.info("初始化-PasswordEncoder-[{}]", this.properties.getPasswordEncoder().getSimpleName());
         return this.properties.getPasswordEncoder().newInstance();
+    }
+
+    /**
+     * aop
+     *
+     * @param tokenProvider
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public UTSKAnnotationAdvisor utskAnnotationAdvisor(TokenProvider tokenProvider) {
+        UTSKAnnotationInterceptor interceptor = new UTSKAnnotationInterceptor(tokenProvider);
+        log.info("初始化-UTSKAnnotationAdvisor");
+        return new UTSKAnnotationAdvisor(interceptor);
     }
 
 

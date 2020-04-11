@@ -20,7 +20,7 @@ import javax.annotation.Resource;
  * @Version 0.0.1
  */
 @Slf4j
-public class LoginService {
+public final class LoginService {
 
 
     @Resource
