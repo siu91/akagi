@@ -5,3 +5,5 @@ akagi:
       - "/v1/api/login"
     # 刷新token需要的的权限
     json-web-token-refresh-permit: "MY_APP_CUSTOM:REFRESH_TOKEN_PERMIT"
+    token-secret-key-mode: custom_local
+    permit-checker: org.siu.myboot.auth.service.PermitService

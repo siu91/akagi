@@ -1,11 +1,11 @@
-package org.siu.myboot;
+package test;
 
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.model.Auth;
+import org.siu.myboot.auth.model.Authorities;
 import org.siu.myboot.auth.model.LoginUser;
-import org.siu.myboot.auth.model.UserAuthorities;
 import org.siu.myboot.auth.service.AbstractAuthService;
 import org.siu.myboot.auth.service.LoginService;
 import org.springframework.boot.SpringApplication;
@@ -59,6 +59,13 @@ public class Application {
         }
 
 
+        @GetMapping("/logout")
+        public Object logout() {
+            loginService.logout();
+            return "success";
+        }
+
+
         /**
          * 刷新token接口（接口使用权限控制）
          *
@@ -77,7 +84,7 @@ public class Application {
 
     /**
      * 实现认证授权相关的业务
-     *  1、用户基本信息 2、权限列表
+     * 1、用户基本信息 2、权限列表
      */
     @Service
     public static class AuthService extends AbstractAuthService {
@@ -89,17 +96,20 @@ public class Application {
         public Auth auth(String s) {
             Auth auth = new Auth();
             /**
+             * 以下模拟从数据库查询用户密码
+             *
              * 可以根据业务情况实现具体的逻辑
              * 如：判断用户是否进入黑名单/未激活等
              */
 
             LoginUser user = new LoginUser();
             user.setId("siu");
-            user.setPass(passwordEncoder.encode("12345"));
-            user.setTokenVersion(5);
+          //  user.setPass(passwordEncoder.encode("12345"));
+            user.setPass("$2a$10$s/gvWeHi/XUGOgSwdlcnVeFuHLdxvQlwch97qYLkAlwMmYo6l4GDC");
+            user.setV(5);
 
-            List<UserAuthorities> authoritiesList = new ArrayList<>();
-            UserAuthorities authorities = new UserAuthorities();
+            List<Authorities> authoritiesList = new ArrayList<>();
+            Authorities authorities = new Authorities();
             authorities.setRole("USER");
             authorities.setPermit("USER:UPDATE");
             authoritiesList.add(authorities);
