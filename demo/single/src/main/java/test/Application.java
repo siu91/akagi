@@ -3,6 +3,8 @@ package test;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.siu.myboot.auth.annotations.Black;
+import org.siu.myboot.auth.annotations.Logout;
 import org.siu.myboot.auth.model.Auth;
 import org.siu.myboot.auth.model.Authorities;
 import org.siu.myboot.auth.model.LoginUser;
@@ -62,6 +64,18 @@ public class Application {
         @GetMapping("/logout")
         public Object logout() {
             loginService.logout();
+            return "success";
+        }
+
+        @Logout
+        @GetMapping("/logout1")
+        public Object logout1() {
+            return "success";
+        }
+
+        @Black
+        @GetMapping("/black")
+        public Object black() {
             return "success";
         }
 
