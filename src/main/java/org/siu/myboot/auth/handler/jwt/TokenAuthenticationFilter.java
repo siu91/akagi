@@ -46,10 +46,10 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        String jwt = getToken(httpServletRequest);
 
         if (!ignoreCheckTokenWhenUriAntMatch(httpServletRequest)) {
             // 验证token
+            String jwt = getToken(httpServletRequest);
             Token token = tokenProvider.validate(jwt);
 
             if (token.isAuthorized()) {

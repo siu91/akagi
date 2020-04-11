@@ -1,6 +1,5 @@
 package org.siu.myboot.auth.service;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,14 +10,14 @@ import org.springframework.util.StringUtils;
 import java.util.Collection;
 
 /**
- * 权限校验服务
+ * 默认权限校验服务实现
  *
  * @Author Siu
  * @Date 2020/3/9 11:00
  * @Version 0.0.1
  */
 @Slf4j
-public class PermitService {
+public class PermitService implements PermitChecker {
 
     /**
      * 超级管理员拥有最高权限
@@ -39,6 +38,7 @@ public class PermitService {
      * @param perm 权限标识
      * @return
      */
+    @Override
     public boolean hasPermit(String perm) {
         if (!StringUtils.hasText(perm)) {
             return false;
@@ -61,6 +61,7 @@ public class PermitService {
      *
      * @return
      */
+    @Override
     public boolean hasRefreshTokenPermit() {
         return this.hasPermit(this.refreshTokenPermit);
     }

@@ -2,7 +2,11 @@ package org.siu.myboot.auth.autoconfigure;
 
 import lombok.Data;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.service.PermitChecker;
+import org.siu.myboot.auth.service.PermitService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
@@ -42,7 +46,6 @@ public class AkagiProperties {
      * Token Secret Key 模式
      * PUBLIC : 所有用户公用一个 token secret
      * CUSTOM : 每个用户单独的 token secret
-     *
      */
     private AkagiTokenSecretKeyMode tokenSecretKeyMode = AkagiTokenSecretKeyMode.PUBLIC;
 
@@ -76,6 +79,18 @@ public class AkagiProperties {
      * 刷新token权限标识，默认："SYS:REFRESH_TOKEN"
      */
     private String jsonWebTokenRefreshPermit = Constant.Auth.JSON_WEB_TOKEN_REFRESH_PERMIT;
+
+
+    /**
+     * 密码加密器，默认使用 BCryptPasswordEncoder
+     */
+    private Class<? extends PasswordEncoder> passwordEncoder = BCryptPasswordEncoder.class;
+
+    /**
+     * 权限校验，默认使用 PermitService
+     */
+    private Class<? extends PermitChecker> permitChecker = PermitService.class;
+
 
 
     public Set<String> getPermitAll() {

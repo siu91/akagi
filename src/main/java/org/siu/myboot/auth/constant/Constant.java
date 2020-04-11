@@ -77,8 +77,7 @@ public class Constant {
          */
         public static final Set<String> PERMIT_ALL_API = new HashSet<String>() {
             {
-                // add("/config/get");
-                // add("/echo");
+                add("/error");
             }
         };
 

@@ -27,6 +27,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * 自动配置
@@ -109,10 +111,10 @@ public class AkagiAutoConfigure {
 
     @Bean("pms")
     @ConditionalOnMissingBean
-    public PermitService permitService() {
-        PermitService permitService = new PermitService(this.properties.getSuperUser(), this.properties.getJsonWebTokenRefreshPermit());
-        log.info("初始化-PermitService");
-        return permitService;
+    public PermitChecker permitChecker() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        log.info("初始化-PermitService-[{}]", this.properties.getPermitChecker().getSimpleName());
+        Constructor constructor = this.properties.getPermitChecker().getDeclaredConstructor(String.class, String.class);
+        return (PermitChecker) constructor.newInstance(this.properties.getSuperUser(), this.properties.getJsonWebTokenRefreshPermit());
     }
 
     /**
@@ -134,9 +136,9 @@ public class AkagiAutoConfigure {
      * @return
      */
     @Bean("passwordEncoder")
-    public PasswordEncoder passwordEncoder() {
-        log.info("初始化-PasswordEncoder");
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() throws IllegalAccessException, InstantiationException {
+        log.info("初始化-PasswordEncoder-[{}]", this.properties.getPasswordEncoder().getSimpleName());
+        return this.properties.getPasswordEncoder().newInstance();
     }
 
 
