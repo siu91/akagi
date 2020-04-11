@@ -1,6 +1,6 @@
 package org.siu.myboot.auth.config;
 
-import org.siu.myboot.auth.handler.jwt.TokenAuthenticationFilter;
+import org.siu.myboot.auth.handler.TokenAuthenticationFilter;
 import org.siu.myboot.auth.handler.jwt.TokenProvider;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

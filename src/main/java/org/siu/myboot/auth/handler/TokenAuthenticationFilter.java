@@ -1,8 +1,9 @@
-package org.siu.myboot.auth.handler.jwt;
+package org.siu.myboot.auth.handler;
 
 
 import lombok.extern.slf4j.Slf4j;
 import org.siu.myboot.auth.constant.Constant;
+import org.siu.myboot.auth.handler.jwt.TokenProvider;
 import org.siu.myboot.auth.model.Token;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
