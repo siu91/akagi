@@ -12,7 +12,9 @@
 
 
 
-## 设计（待补充）
+## 设计
+
+![image-20200412212934256](./assets/akagi.png)
 
 ## 接入模式说明
 
@@ -65,103 +67,125 @@
   - 代码示例
 
     ```java
-    
+    /**
+     * @Author Siu
+     */
     @SpringBootApplication
     public class Application {
-        
-            public static void main(String[] args) {
-                SpringApplication.run(Application.class, args);
-            }
-        
-        
-            @Data
-            public static class Login {
-                private String username;
-                private String password;
-            }
-        
-            @Slf4j
-            @RestController
-            @RequestMapping("/v1/api")
-            public static class AuthController {
-        
-                @Resource
-                private LoginService loginService;
-        
-                /**
-                 * 登录接口
-                 * @param login
-                 * @return
-                 */
-                @PostMapping("/login")
-                public Object login(@Validated @RequestBody Login login) {
-                    return loginService.login(login.getUsername(), login.getPassword(), false);
-                }
-                
-                
-                /**
-                 * 刷新token接口（接口使用权限控制）
-                 *
-                 * @return
-                 */
-                @GetMapping("/refresh_token")
-                @PreAuthorize("@pms.hasRefreshTokenPermit()")
-                public Object refreshToken() {
-                    return loginService.refreshToken();
     
-                }
-        
-        
-                /**
-                 * 接口使用权限控制
-                 * @return
-                 */
-                @PostMapping("/test")
-                @PreAuthorize("@pms.hasPermit('USER')")
-                public Object test() {
-                    return "success";
-        
-                }
-        
-            }
-        
-        
-            /**
-             * 实现认证授权相关的业务
-             *  1、用户基本信息 2、权限列表
-             */
-            @Service
-            public static class AuthService extends AbstractAuthService {
-        
-                @Resource
-                PasswordEncoder passwordEncoder;
-        
-                @Override
-                public Auth auth(String s) {
-                    Auth auth = new Auth();
-                    /**
-                     * 可以根据业务情况实现具体的逻辑
-                     * 如：判断用户是否进入黑名单/未激活等
-                     */
-                    LoginUser user = new LoginUser();
-                    user.setId("siu");
-                    user.setPass(passwordEncoder.encode("12345"));
-                    user.setTokenVersion(5);
-        
-                    List<UserAuthorities> authoritiesList = new ArrayList<>();
-                    UserAuthorities authorities = new UserAuthorities();
-                    authorities.setRole("USER");
-                    authorities.setPermit("USER:UPDATE");
-                    authoritiesList.add(authorities);
-        
-                    auth.setUser(user);
-                    auth.setAuthorities(authoritiesList);
-        
-                    return auth;
-                }
-            }
-        
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
         }
+    
+    
+        @Data
+        public static class Login {
+            private String username;
+            private String password;
+        }
+    
+        @Slf4j
+        @RestController
+        @RequestMapping("/v1/api")
+        public static class AuthController {
+    
+            @Resource
+            private LoginService loginService;
+    
+            /**
+             * 登录接口
+             *
+             * @param login
+             * @return
+             */
+            @PostMapping("/login")
+            public Object login(@Validated @RequestBody Login login) {
+                return loginService.login(login.getUsername(), login.getPassword(), false);
+            }
+    
+            @GetMapping("/logout")
+            public Object logout() {
+                loginService.logout();
+                return "success";
+            }
+    
+            @Logout
+            @GetMapping("/logout1")
+            public Object logout1() {
+                return "success";
+            }
+    
+            @Black
+            @GetMapping("/black")
+            public Object black() {
+                return "success";
+            }
+    
+    
+            /**
+             * 刷新token接口（接口使用权限控制）
+             *
+             * @return
+             */
+            @GetMapping("/refresh_token")
+            //@PreAuthorize("@pms.hasPremit('dafasdfsdfa')")
+            //@PreAuthorize("hasRole('ADMIN') AND hasRole('DBA')")
+            @PreAuthorize("hasAuthority('TEST1') AND hasAuthority('TEST2')")
+            public Object refreshToken() {
+                return loginService.refreshToken();
+    
+            }
+    
+    
+        }
+    
+    
+        /**
+         * 实现认证授权相关的业务
+         * 1、用户基本信息 2、权限列表
+         */
+        @Service
+        public static class AuthService extends AbstractAuthService {
+    
+            @Resource
+            PasswordEncoder passwordEncoder;
+    
+            @Override
+            public Auth auth(String s) {
+                Auth auth = new Auth();
+                /**
+                 * 以下模拟从数据库查询用户密码
+                 *
+                 * 可以根据业务情况实现具体的逻辑
+                 * 如：判断用户是否进入黑名单/未激活等
+                 */
+    
+                LoginUser user = new LoginUser();
+                user.setId("siu");
+                user.setPass(passwordEncoder.encode("12345"));
+    
+                List<Authorities> authoritiesList = new ArrayList<>();
+                Authorities authorities = new Authorities();
+                authorities.setRole("USER");
+                authorities.setPermit("USER:UPDATE");
+                authoritiesList.add(authorities);
+    
+    
+                Authorities authorities1 = new Authorities();
+                authorities1.setRole("TEST1");
+                authorities1.setPermit("TEST2");
+                authoritiesList.add(authorities1);
+    
+                auth.setUser(user);
+                auth.setAuthorities(authoritiesList);
+    
+                return auth;
+            }
+        }
+    
+    
+    }
+    
     ```
 
 - CS模式接入
