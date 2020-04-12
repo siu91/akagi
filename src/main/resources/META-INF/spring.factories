@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.siu.myboot.auth.autoconfigure.AkagiAutoConfigure
+org.siu.akagi.autoconfigure.AkagiAutoConfigure
