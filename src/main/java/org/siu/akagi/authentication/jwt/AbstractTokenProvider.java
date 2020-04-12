@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.model.AuthUser;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.model.JWT;
-import org.siu.akagi.support.AakgiUtils;
+import org.siu.akagi.support.AkagiUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -174,7 +174,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      */
     @Override
     public JWT refresh() {
-        Optional<AuthUser> authUser = AakgiUtils.getCurrentUser();
+        Optional<AuthUser> authUser = AkagiUtils.getCurrentUser();
         if (authUser.isPresent()) {
             Claims claims = authUser.get().getClaimsJws().getBody();
             long now = (new Date()).getTime();

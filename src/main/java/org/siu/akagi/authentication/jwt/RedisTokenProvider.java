@@ -2,7 +2,7 @@ package org.siu.akagi.authentication.jwt;
 
 
 import org.siu.akagi.model.AuthUser;
-import org.siu.akagi.support.AakgiUtils;
+import org.siu.akagi.support.AkagiUtils;
 import org.siu.akagi.constant.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class RedisTokenProvider extends AbstractTokenProvider {
 
     @Override
     public void removeKey() {
-        Optional<String> user = AakgiUtils.getCurrentUsername();
+        Optional<String> user = AkagiUtils.getCurrentUsername();
         if (user.isPresent()) {
             String username = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get();
             cache.remove(username);
@@ -46,7 +46,7 @@ public class RedisTokenProvider extends AbstractTokenProvider {
 
     @Override
     public boolean setKey() {
-        Optional<AuthUser> currentUser = AakgiUtils.getCurrentUser();
+        Optional<AuthUser> currentUser = AkagiUtils.getCurrentUser();
         currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), toKey(authUser.toBase64())));
         return currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64())).isPresent();
     }

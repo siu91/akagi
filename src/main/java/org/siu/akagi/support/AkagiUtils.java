@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 @Slf4j
 @UtilityClass
-public class AakgiUtils {
+public class AkagiUtils {
 
     /**
      * 获取当前用户的登录ID（用户名、手机等）
