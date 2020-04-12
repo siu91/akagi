@@ -3,13 +3,14 @@ package test;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.siu.myboot.auth.annotations.Black;
-import org.siu.myboot.auth.annotations.Logout;
-import org.siu.myboot.auth.model.Auth;
-import org.siu.myboot.auth.model.Authorities;
-import org.siu.myboot.auth.model.LoginUser;
-import org.siu.myboot.auth.service.AbstractAuthService;
-import org.siu.myboot.auth.service.LoginService;
+
+import org.siu.akagi.annotations.Black;
+import org.siu.akagi.annotations.Logout;
+import org.siu.akagi.model.Auth;
+import org.siu.akagi.model.Authorities;
+import org.siu.akagi.model.LoginUser;
+import org.siu.akagi.support.AbstractAuthService;
+import org.siu.akagi.support.LoginService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -83,10 +84,15 @@ public class Application {
         /**
          * 刷新token接口（接口使用权限控制）
          *
+         *  hasAuthority 和 hasAnyAuthority 来判定。 其实底层实现和 hasAnyRole 方法一样，只不过 prefix 为 null 。也就是你写入的 GrantedAuthority 是什么样子的，这里传入参数的就是什么样子的，不再受 ROLE_ 前缀的制约。
+         *
+         *
          * @return
          */
         @GetMapping("/refresh_token")
-        @PreAuthorize("@pms.hasRefreshTokenPermit()")
+        //@PreAuthorize("@pms.hasPremit('dafasdfsdfa')")
+        //@PreAuthorize("hasRole('ADMIN') AND hasRole('DBA')")
+        @PreAuthorize("hasAuthority('TEST1') AND hasAuthority('TEST2')")
         public Object refreshToken() {
             return loginService.refreshToken();
 
@@ -127,6 +133,12 @@ public class Application {
             authorities.setRole("USER");
             authorities.setPermit("USER:UPDATE");
             authoritiesList.add(authorities);
+
+
+            Authorities authorities1 = new Authorities();
+            authorities1.setRole("TEST1");
+            authorities1.setPermit("TEST2");
+            authoritiesList.add(authorities1);
 
             auth.setUser(user);
             auth.setAuthorities(authoritiesList);
