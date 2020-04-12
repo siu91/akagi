@@ -96,6 +96,15 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
+             /*   .expressionHandler(new DefaultWebSecurityExpressionHandler() {
+                    @Override
+                    protected SecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, FilterInvocation fi) {
+                        WebSecurityExpressionRoot root = (WebSecurityExpressionRoot) super.createSecurityExpressionRoot(authentication, fi);
+                        root.setDefaultRolePrefix(""); //remove the prefix ROLE_
+                        root.setPermissionEvaluator(new AkagiPermissionEvaluator());
+                        return root;
+                    }
+                })*/
                 .antMatchers(akagiProperties.getPermitAll().toArray(new String[permitSize])).permitAll()
                 // 要求所有进入应用的HTTP请求都要进行认证
                 .anyRequest().authenticated()
