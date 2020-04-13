@@ -159,8 +159,8 @@
             PasswordEncoder passwordEncoder;
     
             @Override
-            public Auth auth(String s) {
-                Auth auth = new Auth();
+            public Auth userDetails(String s) {
+                Auth userDetails = new Auth();
                 /**
                  * 以下模拟从数据库查询用户密码
                  *
@@ -184,10 +184,10 @@
                 authorities1.setPermit("TEST2");
                 authoritiesList.add(authorities1);
     
-                auth.setUser(user);
-                auth.setAuthorities(authoritiesList);
+                userDetails.setUser(user);
+                userDetails.setAuthorities(authoritiesList);
     
-                return auth;
+                return userDetails;
             }
         }
     
@@ -322,7 +322,7 @@
     },
     {
       "name": "akagi.security.permit-checker",
-      "type": "java.lang.Class<? extends org.siu.akagi.support.Authorize>",
+      "type": "java.lang.Class<? extends org.siu.akagi.support.authorize.Authorize>",
       "description": "权限校验，默认使用 PermitService",
       "sourceType": "org.siu.akagi.autoconfigure.AkagiProperties"
     },

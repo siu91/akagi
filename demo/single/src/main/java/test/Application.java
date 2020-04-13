@@ -6,10 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.siu.akagi.annotations.Black;
 import org.siu.akagi.annotations.Logout;
-import org.siu.akagi.model.Auth;
 import org.siu.akagi.model.Authorities;
-import org.siu.akagi.model.LoginUser;
-import org.siu.akagi.support.AbstractAuthService;
+import org.siu.akagi.model.User;
+import org.siu.akagi.model.UserDetails;
+import org.siu.akagi.model.UserProperties;
+import org.siu.akagi.support.AbstractUserDetailsService;
 import org.siu.akagi.support.LoginService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -107,14 +108,14 @@ public class Application {
      * 1、用户基本信息 2、权限列表
      */
     @Service
-    public static class AuthService extends AbstractAuthService {
+    public static class AuthService extends AbstractUserDetailsService {
 
         @Resource
         PasswordEncoder passwordEncoder;
 
         @Override
-        public Auth auth(String s) {
-            Auth auth = new Auth();
+        public UserDetails auth(String s) {
+            UserDetails userDetails = new UserDetails();
             /**
              * 以下模拟从数据库查询用户密码
              *
@@ -122,7 +123,7 @@ public class Application {
              * 如：判断用户是否进入黑名单/未激活等
              */
 
-            LoginUser user = new LoginUser();
+            UserProperties user = new UserProperties();
             user.setId("siu");
           //  user.setPass(passwordEncoder.encode("12345"));
             user.setPass("$2a$10$s/gvWeHi/XUGOgSwdlcnVeFuHLdxvQlwch97qYLkAlwMmYo6l4GDC");
@@ -140,10 +141,10 @@ public class Application {
             authorities1.setPermit("TEST2");
             authoritiesList.add(authorities1);
 
-            auth.setUser(user);
-            auth.setAuthorities(authoritiesList);
+            userDetails.setUser(user);
+            userDetails.setAuthorities(authoritiesList);
 
-            return auth;
+            return userDetails;
         }
     }
 

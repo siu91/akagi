@@ -9,7 +9,7 @@ import org.siu.akagi.authentication.jwt.*;
 import org.siu.akagi.aop.UTSKAnnotationAdvisor;
 import org.siu.akagi.aop.UTSKAnnotationInterceptor;
 import org.siu.akagi.autoconfigure.banner.AkagiBanner;
-import org.siu.akagi.support.Authorize;
+import org.siu.akagi.support.authorize.Authorize;
 import org.siu.akagi.support.LoginService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

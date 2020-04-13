@@ -1,4 +1,4 @@
-package org.siu.akagi.support;
+package org.siu.akagi.support.authorize;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;

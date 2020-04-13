@@ -1,4 +1,4 @@
-package org.siu.akagi.support;
+package org.siu.akagi.support.authorize;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
