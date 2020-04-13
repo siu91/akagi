@@ -8,6 +8,7 @@ import org.siu.akagi.authentication.DefaultAuthenticationEntryPoint;
 import org.siu.akagi.authentication.jwt.*;
 import org.siu.akagi.aop.UTSKAnnotationAdvisor;
 import org.siu.akagi.aop.UTSKAnnotationInterceptor;
+import org.siu.akagi.authorize.AuthorizeServiceWithSuperUser;
 import org.siu.akagi.autoconfigure.banner.AkagiBanner;
 import org.siu.akagi.authorize.Authorize;
 import org.siu.akagi.support.LoginService;
@@ -118,10 +119,14 @@ public class AkagiAutoConfigure implements ApplicationRunner {
 
     @Bean("auth")
     @ConditionalOnMissingBean
-    public Authorize permitChecker() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        log.info("初始化-Authorize Service-[{}]", this.properties.getAuthService().getSimpleName());
-        Constructor constructor = this.properties.getAuthService().getDeclaredConstructor(String.class, String.class);
-        return (Authorize) constructor.newInstance(this.properties.getSuperUser(), this.properties.getJsonWebTokenRefreshPermit());
+    public Authorize authorize() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        log.info("初始化-Authorize Service-[{}]", this.properties.getAuthorizeServiceClass().getSimpleName());
+        if (this.properties.getAuthorizeServiceClass().getName().equals(AuthorizeServiceWithSuperUser.class.getName())) {
+            Constructor constructor = this.properties.getAuthorizeServiceClass().getDeclaredConstructor(String.class, String.class);
+            return (Authorize) constructor.newInstance(this.properties.getSuperUser(), this.properties.getJsonWebTokenRefreshPermit());
+        }
+        return this.properties.getAuthorizeServiceClass().newInstance();
+
     }
 
     /**

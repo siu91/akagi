@@ -92,6 +92,6 @@ public class AkagiProperties {
     /**
      * 权限校验，默认使用 AuthorizeService
      */
-    private Class<? extends Authorize> authService = AuthorizeService.class;
+    private Class<? extends Authorize> authorizeServiceClass = AuthorizeService.class;
 
 }
