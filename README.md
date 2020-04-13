@@ -322,7 +322,7 @@
     },
     {
       "name": "akagi.security.permit-checker",
-      "type": "java.lang.Class<? extends org.siu.akagi.support.authorize.Authorize>",
+      "type": "java.lang.Class<? extends org.siu.akagi.authorize.Authorize>",
       "description": "权限校验，默认使用 PermitService",
       "sourceType": "org.siu.akagi.autoconfigure.AkagiProperties"
     },

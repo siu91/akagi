@@ -1,9 +1,9 @@
 package org.siu.akagi.autoconfigure;
 
 import lombok.Data;
-import org.siu.akagi.support.authorize.AuthorizeService;
+import org.siu.akagi.authorize.AuthorizeService;
 import org.siu.akagi.constant.Constant;
-import org.siu.akagi.support.authorize.Authorize;
+import org.siu.akagi.authorize.Authorize;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,4 +1,4 @@
-package org.siu.akagi.support.authorize;
+package org.siu.akagi.authorize;
 
 /**
  * 鉴权
