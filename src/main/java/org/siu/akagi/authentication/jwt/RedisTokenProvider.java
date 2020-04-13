@@ -53,14 +53,17 @@ public class RedisTokenProvider extends AbstractTokenProvider {
 
     @Override
     public Key signKey(String user) {
-        Key s = cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user);
-        if (s != null) {
-            return s;
+        String signKeyRedisKey = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user;
+        if (exists(signKeyRedisKey)) {
+            Key s = cache.get(signKeyRedisKey);
+            if (s != null) {
+                return s;
+            }
         }
 
         Object result;
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-        result = operations.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user);
+        result = operations.get(signKeyRedisKey);
 
         if (result != null) {
             return toKey(result.toString());
@@ -84,6 +87,10 @@ public class RedisTokenProvider extends AbstractTokenProvider {
 
     public void remove(final String key) {
         redisTemplate.delete(key);
+    }
+
+    public boolean exists(final String key) {
+        return redisTemplate.hasKey(key);
     }
 
 }
