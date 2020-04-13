@@ -93,7 +93,8 @@ public class Application {
         @GetMapping("/refresh_token")
         //@PreAuthorize("@pms.hasPremit('dafasdfsdfa')")
         //@PreAuthorize("hasRole('ADMIN') AND hasRole('DBA')")
-        @PreAuthorize("hasAuthority('TEST1') AND hasAuthority('TEST2')")
+        //@PreAuthorize("hasAuthority('TEST1') AND hasAuthority('TEST2')")
+        @PreAuthorize("hasAuthority('MY_APP_CUSTOM:REFRESH_TOKEN_PERMIT') AND hasAuthority('MY_APP_CUSTOM:REFRESH_TOKEN_PERMIT')")
         public Object refreshToken() {
             return loginService.refreshToken();
 
