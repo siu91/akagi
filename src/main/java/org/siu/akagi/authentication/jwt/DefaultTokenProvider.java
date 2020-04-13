@@ -15,12 +15,10 @@ import java.security.Key;
  */
 public class DefaultTokenProvider extends AbstractTokenProvider {
 
-    private String secret;
     private Key key;
 
     public DefaultTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe, String secret) {
         super(refreshPermit, tokenValidityInSeconds, tokenValidityInSecondsForRememberMe);
-        this.secret = secret;
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
