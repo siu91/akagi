@@ -116,11 +116,11 @@ public class AkagiAutoConfigure implements ApplicationRunner {
         return new AkagiWebSecurityConfig(tokenProvider, defaultAuthenticationEntryPoint, defaultAccessDeniedHandler, this.properties);
     }
 
-    @Bean("pms")
+    @Bean("auth")
     @ConditionalOnMissingBean
     public Authorize permitChecker() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        log.info("初始化-Authorize Service-[{}]", this.properties.getPermitChecker().getSimpleName());
-        Constructor constructor = this.properties.getPermitChecker().getDeclaredConstructor(String.class, String.class);
+        log.info("初始化-Authorize Service-[{}]", this.properties.getAuthService().getSimpleName());
+        Constructor constructor = this.properties.getAuthService().getDeclaredConstructor(String.class, String.class);
         return (Authorize) constructor.newInstance(this.properties.getSuperUser(), this.properties.getJsonWebTokenRefreshPermit());
     }
 

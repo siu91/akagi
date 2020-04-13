@@ -4,7 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.siu.akagi.model.AuthUser;
+import org.siu.akagi.model.User;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.model.JWT;
 import org.siu.akagi.support.AkagiUtils;
@@ -79,7 +79,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         String token = this.buildJWT(authentication, rememberMe);
         long now = (new Date()).getTime();
         String refreshToken = this.buildJWT(authentication, new Date(now + Constant.Auth.DEFAULT_REFRESH_TOKEN_EXPIRE_MS), REFRESH_TOKEN_PROVIDER);
-        String user = ((AuthUser) authentication.getPrincipal()).getUsername();
+        String user = ((User) authentication.getPrincipal()).getUsername();
         return new JWT(user, token, refreshToken);
     }
 
@@ -174,7 +174,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      */
     @Override
     public JWT refresh() {
-        Optional<AuthUser> authUser = AkagiUtils.getCurrentUser();
+        Optional<User> authUser = AkagiUtils.getCurrentUser();
         if (authUser.isPresent()) {
             Claims claims = authUser.get().getClaimsJws().getBody();
             long now = (new Date()).getTime();

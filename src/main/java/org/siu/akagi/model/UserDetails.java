@@ -12,12 +12,12 @@ import java.util.List;
  * @Version 0.0.1
  */
 @Data
-public class Auth {
+public class UserDetails {
 
     /**
      * 用户
      */
-    private LoginUser user;
+    private UserProperties user;
 
     /**
      * 权限

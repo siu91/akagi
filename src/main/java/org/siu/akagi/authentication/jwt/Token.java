@@ -5,7 +5,7 @@ import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.siu.akagi.constant.Constant;
-import org.siu.akagi.model.AuthUser;
+import org.siu.akagi.model.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -114,7 +114,7 @@ public class Token {
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());
 
-            AuthUser principal = new AuthUser(claims.getSubject(), "", authorities);
+            User principal = new User(claims.getSubject(), "", authorities);
             principal.setClaimsJws(this.claimsJws);
 
             this.authenticationToken = new UsernamePasswordAuthenticationToken(principal, token, authorities);

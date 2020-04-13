@@ -9,18 +9,36 @@ package org.siu.akagi.support;
  */
 public interface Authorize {
 
+
+    /**
+     * 校验角色
+     *
+     * @param role
+     * @return
+     */
+    boolean hasRole(String... role);
+
     /**
      * 校验权限
      *
-     * @param perm
+     * @param authority
      * @return
      */
-    boolean hasPermit(String perm);
+    boolean hasAuthority(String... authority);
 
     /**
-     * 校验刷新token权限
+     * 校验所有
+     *
+     * @param any
+     * @return
+     */
+    boolean hasAny(String... any);
+
+    /**
+     * 校验特殊实现
      *
      * @return
      */
-    boolean hasRefreshTokenPermit();
+    boolean has();
+
 }

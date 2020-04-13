@@ -2,7 +2,7 @@ package org.siu.akagi.support;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.siu.akagi.model.AuthUser;
+import org.siu.akagi.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,7 +48,7 @@ public class AkagiUtils {
      *
      * @return
      */
-    public static Optional<AuthUser> getCurrentUser() {
+    public static Optional<User> getCurrentUser() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
@@ -56,10 +56,10 @@ public class AkagiUtils {
             return Optional.empty();
         }
 
-        AuthUser user = null;
+        User user = null;
 
-        if (authentication.getPrincipal() instanceof AuthUser) {
-            user = (AuthUser) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof User) {
+            user = (User) authentication.getPrincipal();
         }
 
 

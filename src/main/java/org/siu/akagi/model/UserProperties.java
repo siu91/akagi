@@ -10,7 +10,7 @@ import lombok.Data;
  * @Version 0.0.1
  */
 @Data
-public class LoginUser {
+public class UserProperties {
 
     /**
      * 用户的标识（必须唯一）

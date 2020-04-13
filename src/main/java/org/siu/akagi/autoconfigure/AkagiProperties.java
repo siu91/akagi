@@ -1,7 +1,7 @@
 package org.siu.akagi.autoconfigure;
 
 import lombok.Data;
-import org.siu.akagi.support.PermitService;
+import org.siu.akagi.support.AuthorizeService;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.support.Authorize;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -89,7 +89,7 @@ public class AkagiProperties {
     /**
      * 权限校验，默认使用 PermitService
      */
-    private Class<? extends Authorize> permitChecker = PermitService.class;
+    private Class<? extends Authorize> authService = AuthorizeService.class;
 
 
 

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.siu.akagi.constant.Constant;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  * @Date 2020/3/7 14:18
  * @Version 0.0.1
  */
-public class AuthUser extends User {
+public class User extends org.springframework.security.core.userdetails.User {
 
 
     /**
@@ -36,7 +35,7 @@ public class AuthUser extends User {
     private Jws<Claims> claimsJws;
 
 
-    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Object... v) {
+    public User(String username, String password, Collection<? extends GrantedAuthority> authorities, Object... v) {
         super(username, password, authorities);
         this.v.add(Constant.Auth.JSON_WEB_TOKEN_BASE64_SECRET);
         this.v.addAll(this.getAuthorities().stream().map(GrantedAuthority::getAuthority).sorted().collect(Collectors.toList()));

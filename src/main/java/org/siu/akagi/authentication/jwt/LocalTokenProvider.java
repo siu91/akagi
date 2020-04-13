@@ -1,7 +1,7 @@
 package org.siu.akagi.authentication.jwt;
 
 
-import org.siu.akagi.model.AuthUser;
+import org.siu.akagi.model.User;
 import org.siu.akagi.support.AkagiUtils;
 import org.siu.akagi.constant.Constant;
 
@@ -34,7 +34,7 @@ public class LocalTokenProvider extends AbstractTokenProvider {
 
     @Override
     public boolean setKey() {
-        Optional<AuthUser> currentUser = AkagiUtils.getCurrentUser();
+        Optional<User> currentUser = AkagiUtils.getCurrentUser();
         if (currentUser.isPresent()) {
             String base64 = currentUser.get().toBase64();
             Key key = toKey(base64);
