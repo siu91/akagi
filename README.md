@@ -334,7 +334,7 @@
     },
     {
       "name": "akagi.security.token-sign-key-mode",
-      "type": "org.siu.akagi.autoconfigure.AkagiTokenSignKeyMode",
+      "type": "org.siu.akagi.autoconfigure.AkagiTokenStoreStrategy",
       "description": "Token Sign Key 模式 PUBLIC : 所有用户公用一个 Token Sign CUSTOM : 每个用户单独的 Token Sign",
       "sourceType": "org.siu.akagi.autoconfigure.AkagiProperties"
     }

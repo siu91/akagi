@@ -60,7 +60,7 @@ public class AkagiAutoConfigure implements ApplicationRunner {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnExpression("'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.akagi.autoconfigure.AkagiTokenSignKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
+    @ConditionalOnExpression("'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.akagi.autoconfigure.AkagiTokenStoreStrategy).REDIS.toString().toLowerCase())")
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
@@ -75,7 +75,7 @@ public class AkagiAutoConfigure implements ApplicationRunner {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnExpression("'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.akagi.autoconfigure.AkagiTokenSignKeyMode).CUSTOM_REDIS.toString().toLowerCase())")
+    @ConditionalOnExpression("'${akagi.security.token-secret-key-mode}'.toLowerCase().equals(T(org.siu.akagi.autoconfigure.AkagiTokenStoreStrategy).REDIS.toString().toLowerCase())")
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         // 配置序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
@@ -95,14 +95,14 @@ public class AkagiAutoConfigure implements ApplicationRunner {
     @ConditionalOnMissingBean
     public TokenProvider tokenProvider() {
         TokenProvider tokenProvider;
-        if (this.properties.getTokenSignKeyMode().equals(AkagiTokenSignKeyMode.CUSTOM_LOCAL)) {
+        if (this.properties.getTokenStoreStrategy().equals(AkagiTokenStoreStrategy.LOCAL)) {
             tokenProvider = new LocalTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new TokenSignKeyCache());
-        } else if (this.properties.getTokenSignKeyMode().equals(AkagiTokenSignKeyMode.CUSTOM_REDIS)) {
+        } else if (this.properties.getTokenStoreStrategy().equals(AkagiTokenStoreStrategy.REDIS)) {
             tokenProvider = new RedisTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), new TokenSignKeyCache());
         } else {
             tokenProvider = new DefaultTokenProvider(this.properties.getJsonWebTokenRefreshPermit(), this.properties.getJsonWebTokenExpire(), this.properties.getJsonWebTokenExpireForRemember(), this.properties.getJsonWebTokenBase64Secret());
         }
-        log.info("初始化-Token Provider:[{}]", this.properties.getTokenSignKeyMode());
+        log.info("初始化-Token Provider:[{}]", this.properties.getTokenStoreStrategy());
         return tokenProvider;
     }
 

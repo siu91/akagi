@@ -70,7 +70,7 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        final int permitSize = akagiProperties.getPermitAll().size();
+        final int permitSize = akagiProperties.getPermitAllUri().size();
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
@@ -105,7 +105,7 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
                         return root;
                     }
                 })*/
-                .antMatchers(akagiProperties.getPermitAll().toArray(new String[permitSize])).permitAll()
+                .antMatchers(akagiProperties.getPermitAllUri().toArray(new String[permitSize])).permitAll()
                 // 要求所有进入应用的HTTP请求都要进行认证
                 .anyRequest().authenticated()
                 .and()
@@ -120,6 +120,6 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
      * @return
      */
     private AkagiSecurityConfigurerAdapter securityConfigurerAdapter() {
-        return new AkagiSecurityConfigurerAdapter(tokenProvider, akagiProperties.getPermitAll());
+        return new AkagiSecurityConfigurerAdapter(tokenProvider, akagiProperties.getPermitAllUri());
     }
 }

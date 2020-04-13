@@ -27,10 +27,10 @@ public class AkagiProperties {
 
     @PostConstruct
     private void init() {
-        if (this.permitAll == null) {
-            this.permitAll = new HashSet<>();
+        if (this.permitAllUri == null) {
+            this.permitAllUri = new HashSet<>();
         }
-        this.permitAll.addAll(Constant.Auth.PERMIT_ALL_API);
+        this.permitAllUri.addAll(Constant.Auth.PERMIT_ALL_API);
     }
 
 
@@ -43,11 +43,14 @@ public class AkagiProperties {
     private AkagiMode mode = AkagiMode.SINGLE;
 
     /**
-     * Token Sign Key 模式
-     * PUBLIC : 所有用户公用一个 Token Sign
-     * CUSTOM : 每个用户单独的 Token Sign
+     * Token Sign Key 保存策略
+     * 默认：原生JWT策略，token无状态
+     * <p>
+     * PUBLIC : 所有用户公用一个 Token Sign,无状态，不支持注销/拉黑
+     * CUSTOM_LOCAL : 每个用户单独的 Token Sign Key 保存在本地，不支持分布式下注销/拉黑
+     * CUSTOM_REDIS : 每个用户单独的 Token Sign Key 保存在Redis，支持分布式下注销/拉黑
      */
-    private AkagiTokenSignKeyMode tokenSignKeyMode = AkagiTokenSignKeyMode.PUBLIC;
+    private AkagiTokenStoreStrategy tokenStoreStrategy = AkagiTokenStoreStrategy.NATIVE;
 
     /**
      * 超级用户
@@ -57,7 +60,7 @@ public class AkagiProperties {
     /**
      * 开放无需认证的接口:支持 Ant Matcher
      */
-    private Set<String> permitAll;
+    private Set<String> permitAllUri;
 
 
     /**
@@ -87,17 +90,8 @@ public class AkagiProperties {
     private Class<? extends PasswordEncoder> passwordEncoder = BCryptPasswordEncoder.class;
 
     /**
-     * 权限校验，默认使用 PermitService
+     * 权限校验，默认使用 AuthorizeService
      */
     private Class<? extends Authorize> authService = AuthorizeService.class;
 
-
-
-    public Set<String> getPermitAll() {
-        return permitAll;
-    }
-
-    public void setPermitAll(Set<String> permitAll) {
-        this.permitAll = permitAll;
-    }
 }
