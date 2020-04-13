@@ -34,8 +34,8 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
      */
     @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(final String userLoginId) {
-        UserDetails userDetails = auth(userLoginId);
-        return buildAuthUser(userDetails.getUser(), userDetails.getAuthorities());
+        UserDetails userDetails = loadUser(userLoginId);
+        return buildUser(userDetails.getUser(), userDetails.getAuthorities());
 
     }
 
@@ -46,7 +46,7 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
      * @param userLoginId
      * @return
      */
-    public abstract UserDetails auth(final String userLoginId);
+    public abstract UserDetails loadUser(final String userLoginId);
 
     /**
      * 认证与授权对象拼装
@@ -55,7 +55,7 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
      * @param userAuthorities 用户的授权信息
      * @return 用户信息&权限信息
      */
-    protected User buildAuthUser(UserProperties userProperties, List<Authorities> userAuthorities) {
+    protected User buildUser(UserProperties userProperties, List<Authorities> userAuthorities) {
         Set<String> tmp = new HashSet<>();
         for (Authorities authorities : userAuthorities) {
             if (authorities.getRole() != null) {

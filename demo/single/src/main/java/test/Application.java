@@ -114,7 +114,7 @@ public class Application {
         PasswordEncoder passwordEncoder;
 
         @Override
-        public UserDetails auth(String s) {
+        public UserDetails loadUser(String s) {
             UserDetails userDetails = new UserDetails();
             /**
              * 以下模拟从数据库查询用户密码
