@@ -19,14 +19,13 @@ public interface TokenProvider {
     /**
      * 移除Key
      */
-    void removeKey();
+    void remove();
 
     /**
      * 设置Token Sign key
      *
-     * @return
      */
-    boolean setKey();
+    void store();
 
     /**
      * 获取用户的签名key
@@ -34,7 +33,7 @@ public interface TokenProvider {
      * @param user
      * @return
      */
-    Key signKey(String user);
+    Key get(String user);
 
 
     /**
@@ -51,7 +50,7 @@ public interface TokenProvider {
      * @param authentication
      * @return
      */
-    JWT buildJsonWebToken(Authentication authentication);
+    JWT create(Authentication authentication);
 
     /**
      * 生成 jwt对象
@@ -60,7 +59,7 @@ public interface TokenProvider {
      * @param rememberMe
      * @return
      */
-    JWT buildJsonWebToken(Authentication authentication, boolean rememberMe);
+    JWT create(Authentication authentication, boolean rememberMe);
 
     /**
      * 刷新token

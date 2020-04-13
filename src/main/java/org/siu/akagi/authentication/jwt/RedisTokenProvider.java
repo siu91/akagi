@@ -35,7 +35,7 @@ public class RedisTokenProvider extends AbstractTokenProvider {
 
 
     @Override
-    public void removeKey() {
+    public void remove() {
         Optional<String> user = AkagiUtils.getCurrentUsername();
         if (user.isPresent()) {
             String username = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get();
@@ -45,14 +45,14 @@ public class RedisTokenProvider extends AbstractTokenProvider {
     }
 
     @Override
-    public boolean setKey() {
+    public void store() {
         Optional<User> currentUser = AkagiUtils.getCurrentUser();
         currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), toKey(authUser.toBase64())));
-        return currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64())).isPresent();
+        currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64()));
     }
 
     @Override
-    public Key signKey(String user) {
+    public Key get(String user) {
         String signKeyRedisKey = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user;
         if (exists(signKeyRedisKey)) {
             Key s = cache.get(signKeyRedisKey);

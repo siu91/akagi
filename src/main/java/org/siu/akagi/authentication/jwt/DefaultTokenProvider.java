@@ -24,20 +24,19 @@ public class DefaultTokenProvider extends AbstractTokenProvider {
     }
 
     @Override
-    public Key signKey(String user) {
+    public Key get(String user) {
         return this.key;
     }
 
 
     @Override
-    public void removeKey() {
+    public void remove() {
         // do nothing
     }
 
     @Override
-    public boolean setKey() {
+    public void store() {
         // do nothing
-        return true;
     }
 
 

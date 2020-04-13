@@ -26,28 +26,26 @@ public class LocalTokenProvider extends AbstractTokenProvider {
 
 
     @Override
-    public void removeKey() {
+    public void remove() {
         Optional<String> user = AkagiUtils.getCurrentUsername();
         user.ifPresent(s -> cache.remove(Constant.RedisKey.USER_TOKEN_SECRET_KEY + s));
     }
 
 
     @Override
-    public boolean setKey() {
+    public void store() {
         Optional<User> currentUser = AkagiUtils.getCurrentUser();
         if (currentUser.isPresent()) {
             String base64 = currentUser.get().toBase64();
             Key key = toKey(base64);
             cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + currentUser.get().getUsername(), key);
-            return true;
         } else {
-            return false;
         }
 
     }
 
     @Override
-    public Key signKey(String user) {
+    public Key get(String user) {
         return cache.get(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user);
     }
 

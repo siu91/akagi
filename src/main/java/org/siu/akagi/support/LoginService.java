@@ -52,7 +52,7 @@ public final class LoginService {
         // 认证，通过并返回权限
         Authentication authentication = authentication(user, pass);
 
-        return tokenProvider.buildJsonWebToken(authentication, remember);
+        return tokenProvider.create(authentication, remember);
 
     }
 
@@ -60,7 +60,7 @@ public final class LoginService {
      * 注销
      */
     public void logout() {
-        tokenProvider.removeKey();
+        tokenProvider.remove();
     }
 
     /**
@@ -89,7 +89,7 @@ public final class LoginService {
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        tokenProvider.setKey();
+        tokenProvider.store();
         return authentication;
     }
 }

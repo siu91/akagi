@@ -75,7 +75,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * @return
      */
     @Override
-    public JWT buildJsonWebToken(Authentication authentication, boolean rememberMe) {
+    public JWT create(Authentication authentication, boolean rememberMe) {
         String token = this.buildJWT(authentication, rememberMe);
         long now = (new Date()).getTime();
         String refreshToken = this.buildJWT(authentication, new Date(now + Constant.Auth.DEFAULT_REFRESH_TOKEN_EXPIRE_MS), REFRESH_TOKEN_PROVIDER);
@@ -84,8 +84,8 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     }
 
     @Override
-    public JWT buildJsonWebToken(Authentication authentication) {
-        return this.buildJsonWebToken(authentication, false);
+    public JWT create(Authentication authentication) {
+        return this.create(authentication, false);
     }
 
     /**
@@ -156,7 +156,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
                 .claim(Constant.Auth.AUTHORITIES_KEY, authorities)
                 .claim(Constant.Auth.ORIGIN_AUTHORITIES_KEY, originAuthorities == null ? "" : originAuthorities)
                 // 签名
-                .signWith(this.signKey(subject), SignatureAlgorithm.HS512)
+                .signWith(this.get(subject), SignatureAlgorithm.HS512)
                 // 过期时间
                 .setExpiration(validity)
                 // 生效开始时间
@@ -200,7 +200,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     public Token authentication(String authToken) {
         Token token = new Token(authToken);
         try {
-            Key key = this.signKey(token.getUsername());
+            Key key = this.get(token.getUsername());
             if (key != null) {
                 token.parser(key);
             } else {
