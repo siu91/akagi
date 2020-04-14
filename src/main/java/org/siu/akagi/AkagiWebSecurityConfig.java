@@ -1,14 +1,20 @@
 package org.siu.akagi;
 
+import org.siu.akagi.authentication.TokenAuthenticationFilter;
 import org.siu.akagi.autoconfigure.AkagiProperties;
 import org.siu.akagi.authentication.DefaultAccessDeniedHandler;
 import org.siu.akagi.authentication.DefaultAuthenticationEntryPoint;
 import org.siu.akagi.authentication.jwt.TokenProvider;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Set;
 
 /**
  * WebSecurity 配置
@@ -96,30 +102,48 @@ public class AkagiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-             /*   .expressionHandler(new DefaultWebSecurityExpressionHandler() {
-                    @Override
-                    protected SecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, FilterInvocation fi) {
-                        WebSecurityExpressionRoot root = (WebSecurityExpressionRoot) super.createSecurityExpressionRoot(authentication, fi);
-                        root.setDefaultRolePrefix(""); //remove the prefix ROLE_
-                        root.setPermissionEvaluator(new AkagiPermissionEvaluator());
-                        return root;
-                    }
-                })*/
+                /*   .expressionHandler(new DefaultWebSecurityExpressionHandler() {
+                       @Override
+                       protected SecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, FilterInvocation fi) {
+                           WebSecurityExpressionRoot root = (WebSecurityExpressionRoot) super.createSecurityExpressionRoot(authentication, fi);
+                           root.setDefaultRolePrefix(""); //remove the prefix ROLE_
+                           root.setPermissionEvaluator(new AkagiPermissionEvaluator());
+                           return root;
+                       }
+                   })*/
                 .antMatchers(akagiProperties.getPermitAllUri().toArray(new String[permitSize])).permitAll()
                 // 要求所有进入应用的HTTP请求都要进行认证
                 .anyRequest().authenticated()
                 .and()
-                .apply(securityConfigurerAdapter());
+                .apply(new AkagiSecurityConfigurerAdapter(tokenProvider, akagiProperties.getPermitAllUri()));
 
     }
 
 
-    /**
-     * 设置 SecurityConfigurerAdapter
-     *
-     * @return
-     */
-    private AkagiSecurityConfigurerAdapter securityConfigurerAdapter() {
-        return new AkagiSecurityConfigurerAdapter(tokenProvider, akagiProperties.getPermitAllUri());
+    static class AkagiSecurityConfigurerAdapter extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
+        /**
+         * token 提供器
+         */
+        private TokenProvider tokenProvider;
+        /**
+         * 忽略校验的路径pattern
+         */
+        private Set<String> ignorePathPattern;
+
+
+        public AkagiSecurityConfigurerAdapter(TokenProvider tokenProvider, Set<String> ignorePathPattern) {
+            this.tokenProvider = tokenProvider;
+            this.ignorePathPattern = ignorePathPattern;
+        }
+
+        @Override
+        public void configure(HttpSecurity http) {
+            TokenAuthenticationFilter tokenAuthenticationFilter = new TokenAuthenticationFilter(tokenProvider, ignorePathPattern);
+            // 把JWTFilter 放在默认Spring Security UsernamePasswordAuthenticationFilter 前面
+            http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
     }
+
+
 }
