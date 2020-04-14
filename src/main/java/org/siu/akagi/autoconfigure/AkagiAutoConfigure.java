@@ -8,7 +8,6 @@ import org.siu.akagi.authentication.DefaultAuthenticationEntryPoint;
 import org.siu.akagi.authentication.jwt.*;
 import org.siu.akagi.aop.UTSKAnnotationAdvisor;
 import org.siu.akagi.aop.UTSKAnnotationInterceptor;
-import org.siu.akagi.authorize.AuthorizeServiceWithSuperUser;
 import org.siu.akagi.autoconfigure.banner.AkagiBanner;
 import org.siu.akagi.authorize.Authorize;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
@@ -35,8 +34,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * 自动配置
