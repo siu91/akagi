@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * security 配置
+ * 自动配置相关配置项
  *
  * @Author Siu
  * @Date 2020/3/12 22:04
@@ -46,9 +46,9 @@ public class AkagiProperties {
      * Token Sign Key 保存策略
      * 默认：原生JWT策略，token无状态
      * <p>
-     * PUBLIC : 所有用户公用一个 Token Sign,无状态，不支持注销/拉黑
+     * PUBLIC : 所有用户公用一个 Token Sign,无状态，不支持注销/拉黑 (推荐)
      * CUSTOM_LOCAL : 每个用户单独的 Token Sign Key 保存在本地，不支持分布式下注销/拉黑
-     * CUSTOM_REDIS : 每个用户单独的 Token Sign Key 保存在Redis，支持分布式下注销/拉黑
+     * CUSTOM_REDIS : 每个用户单独的 Token Sign Key 保存在Redis，支持分布式下注销/拉黑（推荐）
      */
     private AkagiTokenStoreStrategy tokenStoreStrategy = AkagiTokenStoreStrategy.NATIVE;
 
