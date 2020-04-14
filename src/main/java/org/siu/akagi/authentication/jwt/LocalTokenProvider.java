@@ -1,8 +1,8 @@
 package org.siu.akagi.authentication.jwt;
 
 
+import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.model.User;
-import org.siu.akagi.support.AkagiUtils;
 import org.siu.akagi.constant.Constant;
 
 import java.security.Key;
@@ -27,14 +27,14 @@ public class LocalTokenProvider extends AbstractTokenProvider {
 
     @Override
     public void remove() {
-        Optional<String> user = AkagiUtils.getCurrentUsername();
+        Optional<String> user = AkagiSecurityContextHolder.getCurrentUserName();
         user.ifPresent(s -> cache.remove(Constant.RedisKey.USER_TOKEN_SECRET_KEY + s));
     }
 
 
     @Override
     public void store() {
-        Optional<User> currentUser = AkagiUtils.getCurrentUser();
+        Optional<User> currentUser = AkagiSecurityContextHolder.getCurrentUser();
         if (currentUser.isPresent()) {
             String base64 = currentUser.get().toBase64();
             Key key = toKey(base64);

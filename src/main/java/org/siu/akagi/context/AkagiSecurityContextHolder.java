@@ -10,6 +10,8 @@ import java.util.Set;
 
 
 /**
+ * SecurityContextHolder 增强
+ *
  * @Author Siu
  * @Date 2020/4/14 14:08
  * @Version 0.0.1
@@ -30,7 +32,7 @@ public class AkagiSecurityContextHolder extends SecurityContextHolder {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    public static Set<String> getAuthorities() {
+    public static Optional<Set<String>> getAuthorities() {
         if (SecurityContextHolder.getContext() instanceof AkagiContextImpl) {
             return ((AkagiContextImpl) SecurityContextHolder.getContext()).getAuthorities();
         }

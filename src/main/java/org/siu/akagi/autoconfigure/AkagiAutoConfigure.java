@@ -120,12 +120,8 @@ public class AkagiAutoConfigure implements ApplicationRunner {
 
     @Bean("auth")
     @ConditionalOnMissingBean
-    public Authorize authorize() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    public Authorize authorize() throws IllegalAccessException, InstantiationException {
         log.info("初始化-Authorize Service-[{}]", this.properties.getAuthorizeServiceClass().getSimpleName());
-        if (this.properties.getAuthorizeServiceClass().getName().equals(AuthorizeServiceWithSuperUser.class.getName())) {
-            Constructor constructor = this.properties.getAuthorizeServiceClass().getDeclaredConstructor(String.class, String.class);
-            return (Authorize) constructor.newInstance(this.properties.getSuperUser(), this.properties.getJsonWebTokenRefreshPermit());
-        }
         return this.properties.getAuthorizeServiceClass().newInstance();
 
     }

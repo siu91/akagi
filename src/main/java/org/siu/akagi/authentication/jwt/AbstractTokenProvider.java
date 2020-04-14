@@ -4,10 +4,10 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.model.User;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.model.JWT;
-import org.siu.akagi.support.AkagiUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -174,7 +174,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      */
     @Override
     public JWT refresh() {
-        Optional<User> authUser = AkagiUtils.getCurrentUser();
+        Optional<User> authUser = AkagiSecurityContextHolder.getCurrentUser();
         if (authUser.isPresent()) {
             Claims claims = authUser.get().getClaimsJws().getBody();
             long now = (new Date()).getTime();

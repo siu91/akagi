@@ -2,6 +2,7 @@ package org.siu.akagi.authorize;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.siu.akagi.context.AkagiSecurityContextHolder;
 
 import java.util.List;
 
@@ -16,26 +17,13 @@ import java.util.List;
 public class AuthorizeServiceWithSuperUser extends AbstractAuthorize {
 
     /**
-     * 超级管理员拥有最高权限
-     */
-    private String superUser;
-
-    private String refreshTokenPermit;
-
-
-    public AuthorizeServiceWithSuperUser(String superUser, String refreshTokenPermit) {
-        this.superUser = superUser;
-        this.refreshTokenPermit = refreshTokenPermit;
-    }
-
-    /**
      * 是否有刷新token的权限
      *
      * @return
      */
     @Override
     public boolean has() {
-        return this.hasAny(refreshTokenPermit);
+        return this.hasAny(AkagiSecurityContextHolder.getAkagiGlobalProperties().getJsonWebTokenRefreshPermit());
     }
 
     @Override
@@ -46,9 +34,9 @@ public class AuthorizeServiceWithSuperUser extends AbstractAuthorize {
     @Override
     public boolean hasAuthority(String... authority) {
         if (authority == null) {
-            authority = new String[]{superUser};
+            authority = new String[]{AkagiSecurityContextHolder.getAkagiGlobalProperties().getSuperUser()};
         } else {
-            List<String> tmp = Lists.asList(superUser, authority);
+            List<String> tmp = Lists.asList(AkagiSecurityContextHolder.getAkagiGlobalProperties().getSuperUser(), authority);
             int size = tmp.size();
             authority = tmp.toArray(new String[size]);
         }
