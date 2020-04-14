@@ -11,6 +11,7 @@ import org.siu.akagi.aop.UTSKAnnotationInterceptor;
 import org.siu.akagi.authorize.AuthorizeServiceWithSuperUser;
 import org.siu.akagi.autoconfigure.banner.AkagiBanner;
 import org.siu.akagi.authorize.Authorize;
+import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.support.LoginService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -171,5 +172,6 @@ public class AkagiAutoConfigure implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         AkagiBanner.printBanner();
+        AkagiSecurityContextHolder.init(this.properties);
     }
 }

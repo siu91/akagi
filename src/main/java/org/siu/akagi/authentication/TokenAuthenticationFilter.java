@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.authentication.jwt.TokenProvider;
 import org.siu.akagi.authentication.jwt.Token;
+import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -58,7 +58,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
                 // 1、提取token中携带的权限标识
                 // 2、把token中携带的用户权限放入SecurityContextHolder交由  Spring Security管理
                 Authentication authentication = token.toAuthentication();
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                AkagiSecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("set Authentication to security context for '{}', uri: {}", authentication.getName(), httpServletRequest.getRequestURI());
                 log.info("Authenticated user access:[{}]-[{}]", token.getClaimsJws().getBody().getSubject(), httpServletRequest.getRequestURI());
             } else {
