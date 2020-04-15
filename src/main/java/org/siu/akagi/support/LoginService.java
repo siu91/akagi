@@ -83,11 +83,6 @@ public final class LoginService {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         // 将会会调用 AbstractAuthService.loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        Object o = authentication.getPrincipal();
-        if (o instanceof User) {
-            ((User) o).v(password.hashCode());
-        }
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         tokenProvider.store();
         return authentication;

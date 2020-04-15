@@ -1,12 +1,14 @@
 package org.siu.akagi.authentication.jwt;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.model.User;
 import org.siu.akagi.constant.Constant;
 
 import java.security.Key;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * redis实现token有状态
@@ -15,6 +17,7 @@ import java.util.Optional;
  * @Date 2020/2/21 16:13
  * @Version 0.0.1
  */
+@Slf4j
 public class LocalTokenProvider extends AbstractTokenProvider {
 
     protected TokenSignKeyCache cache;
@@ -40,6 +43,7 @@ public class LocalTokenProvider extends AbstractTokenProvider {
             Key key = toKey(base64);
             cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + currentUser.get().getUsername(), key);
         } else {
+            log.info("current user is null");
         }
 
     }

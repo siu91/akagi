@@ -35,25 +35,14 @@ public class User extends org.springframework.security.core.userdetails.User {
     private Jws<Claims> claimsJws;
 
 
-    public User(String username, String password, Collection<? extends GrantedAuthority> authorities, Object... v) {
+    public User(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
+        this.v.add(UUID.randomUUID().toString());
         this.v.add(Constant.Auth.JSON_WEB_TOKEN_BASE64_SECRET);
         this.v.addAll(this.getAuthorities().stream().map(GrantedAuthority::getAuthority).sorted().collect(Collectors.toList()));
         this.v.add(username);
-        if (v != null) {
-            this.v.addAll(Arrays.asList(v));
-        }
     }
 
-    /**
-     * 添加用户属性
-     *
-     * @param v
-     */
-    public void v(Object v) {
-        this.v.add(v);
-
-    }
 
     /**
      * 转成base64

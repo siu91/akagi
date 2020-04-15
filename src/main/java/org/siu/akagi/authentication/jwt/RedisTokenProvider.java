@@ -1,6 +1,7 @@
 package org.siu.akagi.authentication.jwt;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.model.User;
 import org.siu.akagi.constant.Constant;
@@ -20,6 +21,7 @@ import java.util.Optional;
  * @Date 2020/2/21 16:13
  * @Version 0.0.1
  */
+@Slf4j
 public class RedisTokenProvider extends AbstractTokenProvider {
     private Logger logger = LoggerFactory.getLogger(RedisTokenProvider.class);
 
@@ -47,8 +49,14 @@ public class RedisTokenProvider extends AbstractTokenProvider {
     @Override
     public void store() {
         Optional<User> currentUser = AkagiSecurityContextHolder.getCurrentUser();
-        currentUser.ifPresent(authUser -> cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), toKey(authUser.toBase64())));
-        currentUser.filter(authUser -> set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + authUser.getUsername(), authUser.toBase64()));
+        if (currentUser.isPresent()) {
+            User user = currentUser.get();
+            String base64 = user.toBase64();
+            cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.getUsername(), toKey(base64));
+            set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.getUsername(), base64);
+        }else {
+            log.info("current user is null");
+        }
     }
 
     @Override

@@ -24,12 +24,4 @@ public class UserProperties {
      */
     private String pass;
 
-    /**
-     * 标识用户认证授权相关的属性或动作发生时，变更的状态/版本
-     * <p>
-     * 如用户属性-密码修改，v值改变
-     * 如用户注销，v值改变
-     * 通常可以是一个自增版本号/唯一ID
-     */
-    private Object v;
 }

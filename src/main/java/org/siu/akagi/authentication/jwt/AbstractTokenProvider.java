@@ -182,12 +182,13 @@ public abstract class AbstractTokenProvider implements TokenProvider {
             Date validity2 = new Date(now + Constant.Auth.DEFAULT_REFRESH_TOKEN_EXPIRE_MS);
             String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, TOKEN_PROVIDER);
             String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, REFRESH_TOKEN_PROVIDER);
-
+            this.store();
             return new JWT(claims.getSubject(), newToken, newRefreshToken);
         }
 
         return null;
     }
+
 
 
     /**

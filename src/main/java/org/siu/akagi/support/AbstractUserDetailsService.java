@@ -73,6 +73,6 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
             }
         }.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
-        return new User(userProperties.getId(), userProperties.getPass(), grantedAuthorities, userProperties.getV());
+        return new User(userProperties.getId(), userProperties.getPass(), grantedAuthorities);
     }
 }

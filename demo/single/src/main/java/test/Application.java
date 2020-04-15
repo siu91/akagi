@@ -128,7 +128,6 @@ public class Application {
             user.setId("siu");
           //  user.setPass(passwordEncoder.encode("12345"));
             user.setPass("$2a$10$s/gvWeHi/XUGOgSwdlcnVeFuHLdxvQlwch97qYLkAlwMmYo6l4GDC");
-            user.setV(5);
 
             List<Authorities> authoritiesList = new ArrayList<>();
             Authorities authorities = new Authorities();
