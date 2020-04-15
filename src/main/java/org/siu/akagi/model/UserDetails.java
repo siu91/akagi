@@ -17,11 +17,11 @@ public class UserDetails {
     /**
      * 用户
      */
-    private UserProperties user;
+    private UsernameAndPassword usernameAndPassword;
 
     /**
      * 权限
      */
-    private List<Authorities> authorities;
+    private List<Authorities> userAuthorities;
 
 }

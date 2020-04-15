@@ -10,14 +10,14 @@ import lombok.Data;
  * @Version 0.0.1
  */
 @Data
-public class UserProperties {
+public class UsernameAndPassword {
 
     /**
      * 用户的标识（必须唯一）
      * <p>
      * 如：用户ID、手机、用户名
      */
-    private String id;
+    private String name;
 
     /**
      * 密码
