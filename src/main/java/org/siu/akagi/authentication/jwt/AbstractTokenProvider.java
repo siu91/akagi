@@ -36,22 +36,22 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     protected String refreshPermit;
 
     /**
-     * 默认token失效时间
+     * 默认token失效时间(秒)
      * 设置默认值，也可以从配置文件中配置
      */
-    protected long tokenValidityInSeconds;
+    protected long expire;
 
     /**
-     * 记住密码时token失效时间
+     * 记住密码时token失效时间（秒）
      * 设置默认值，也可以从配置文件中配置
      */
-    protected long tokenValidityInSecondsForRememberMe;
+    protected long expire4Remember;
 
 
-    public AbstractTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe) {
+    public AbstractTokenProvider(String refreshPermit, long expire, long expire4Remember) {
         this.refreshPermit = refreshPermit;
-        this.tokenValidityInSeconds = tokenValidityInSeconds;
-        this.tokenValidityInSecondsForRememberMe = tokenValidityInSecondsForRememberMe;
+        this.expire = expire;
+        this.expire4Remember = expire4Remember;
     }
 
 
@@ -92,17 +92,17 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * 生成 JSON Web Token
      *
      * @param authentication
-     * @param rememberMe
+     * @param remember
      * @return
      */
-    protected String buildJWT(Authentication authentication, boolean rememberMe) {
+    protected String buildJWT(Authentication authentication, boolean remember) {
         // 过期时间处理
         long now = (new Date()).getTime();
         Date validity;
-        if (rememberMe) {
-            validity = new Date(now + this.tokenValidityInSecondsForRememberMe * 1000);
+        if (remember) {
+            validity = new Date(now + this.expire4Remember * 1000);
         } else {
-            validity = new Date(now + this.tokenValidityInSeconds * 1000);
+            validity = new Date(now + this.expire * 1000);
         }
 
         // 构建token信息
@@ -176,13 +176,14 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     public JWT refresh() {
         Optional<User> authUser = AkagiSecurityContextHolder.getCurrentUser();
         if (authUser.isPresent()) {
+            this.store();
             Claims claims = authUser.get().getClaimsJws().getBody();
             long now = (new Date()).getTime();
-            Date validity1 = new Date(now + this.tokenValidityInSecondsForRememberMe * 1000);
+            Date validity1 = new Date(now + this.expire4Remember * 1000);
             Date validity2 = new Date(now + Constant.Auth.DEFAULT_REFRESH_TOKEN_EXPIRE_MS);
             String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, TOKEN_PROVIDER);
             String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, REFRESH_TOKEN_PROVIDER);
-            this.store();
+
             return new JWT(claims.getSubject(), newToken, newRefreshToken);
         }
 
