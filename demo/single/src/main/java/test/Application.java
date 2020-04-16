@@ -9,12 +9,13 @@ import org.siu.akagi.annotations.Logout;
 import org.siu.akagi.model.Authorities;
 import org.siu.akagi.model.User;
 import org.siu.akagi.model.UserDetails;
-import org.siu.akagi.model.UserProperties;
+import org.siu.akagi.model.UsernameAndPassword;
 import org.siu.akagi.support.AbstractUserDetailsService;
 import org.siu.akagi.support.LoginService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -124,10 +125,10 @@ public class Application {
              * 如：判断用户是否进入黑名单/未激活等
              */
 
-            UserProperties user = new UserProperties();
-            user.setId("siu");
+            UsernameAndPassword usernameAndPassword = new UsernameAndPassword();
+            usernameAndPassword.setName("siu");
           //  user.setPass(passwordEncoder.encode("12345"));
-            user.setPass("$2a$10$s/gvWeHi/XUGOgSwdlcnVeFuHLdxvQlwch97qYLkAlwMmYo6l4GDC");
+            usernameAndPassword.setPass("$2a$10$s/gvWeHi/XUGOgSwdlcnVeFuHLdxvQlwch97qYLkAlwMmYo6l4GDC");
 
             List<Authorities> authoritiesList = new ArrayList<>();
             Authorities authorities = new Authorities();
@@ -141,8 +142,8 @@ public class Application {
             authorities1.setPermit("TEST2");
             authoritiesList.add(authorities1);
 
-            userDetails.setUser(user);
-            userDetails.setAuthorities(authoritiesList);
+            userDetails.setUsernameAndPassword(usernameAndPassword);
+            userDetails.setUserAuthorities(authoritiesList);
 
             return userDetails;
         }
