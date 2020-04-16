@@ -28,6 +28,8 @@ public class AkagiContextImpl implements SecurityContext {
 
     private Set<String> authorities;
 
+    private String error;
+
     public AkagiContextImpl() {
     }
 
@@ -63,5 +65,13 @@ public class AkagiContextImpl implements SecurityContext {
             this.authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         }
 
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }

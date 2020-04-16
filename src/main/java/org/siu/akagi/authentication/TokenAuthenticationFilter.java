@@ -1,6 +1,7 @@
 package org.siu.akagi.authentication;
 
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.authentication.jwt.TokenProvider;
@@ -43,6 +44,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     }
 
 
+    @SneakyThrows
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
@@ -63,6 +65,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
                 log.info("Authenticated user access:[{}]-[{}]", token.getClaimsJws().getBody().getSubject(), httpServletRequest.getRequestURI());
             } else {
                 log.error("Authentication Fail:{}, uri: {}", token.getError(), httpServletRequest.getRequestURI());
+                AkagiSecurityContextHolder.setCurrentError(token.getError());
             }
         }
 

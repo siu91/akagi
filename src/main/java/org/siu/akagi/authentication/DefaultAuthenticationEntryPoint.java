@@ -2,6 +2,7 @@ package org.siu.akagi.authentication;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -32,7 +33,7 @@ public class DefaultAuthenticationEntryPoint implements AuthenticationEntryPoint
             log.debug("Pre-authenticated entry point called. Rejecting access");
         }
 
-        response.sendError(403, authException.getMessage());
+        response.sendError(403, AkagiSecurityContextHolder.getCurrentError());
 
     }
 }

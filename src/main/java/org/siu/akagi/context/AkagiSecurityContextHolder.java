@@ -53,6 +53,19 @@ public class AkagiSecurityContextHolder extends SecurityContextHolder {
         return Optional.empty();
     }
 
+    public static String getCurrentError() {
+        if (SecurityContextHolder.getContext() instanceof AkagiContextImpl) {
+            return ((AkagiContextImpl) SecurityContextHolder.getContext()).getError();
+        }
+        return null;
+    }
+
+    public static void setCurrentError(String error) {
+        if (SecurityContextHolder.getContext() instanceof AkagiContextImpl) {
+            ((AkagiContextImpl) SecurityContextHolder.getContext()).setError(error);
+        }
+    }
+
 
     public static AkagiProperties getAkagiGlobalProperties() {
         return akagiGlobalProperties;
