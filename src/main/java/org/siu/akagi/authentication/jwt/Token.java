@@ -59,7 +59,7 @@ public class Token {
     /**
      * 认证信息
      */
-    private Authentication authenticationToken;
+    private Authentication authentication;
 
 
     public Token(String token) {
@@ -105,7 +105,7 @@ public class Token {
      * @return
      */
     public Authentication toAuthentication() {
-        if (this.authenticationToken == null) {
+        if (this.authentication == null) {
             Assert.notNull(this.claimsJws, "必须先解析token");
             Claims claims = this.claimsJws.getBody();
 
@@ -117,9 +117,9 @@ public class Token {
             User principal = new User(claims.getSubject(), "", authorities);
             principal.setClaimsJws(this.claimsJws);
 
-            this.authenticationToken = new UsernamePasswordAuthenticationToken(principal, token, authorities);
+            this.authentication = new UsernamePasswordAuthenticationToken(principal, token, authorities);
         }
-        return this.authenticationToken;
+        return this.authentication;
     }
 
 }
