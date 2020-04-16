@@ -191,7 +191,6 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     }
 
 
-
     /**
      * 校验token
      *
@@ -222,6 +221,11 @@ public abstract class AbstractTokenProvider implements TokenProvider {
             log.trace("JWT token compact of handler are invalid trace: ", e);
         }
         return token;
+    }
+
+    @Override
+    public Authentication getAuthentication(Token token) {
+        return token.toAuthentication();
     }
 
 }

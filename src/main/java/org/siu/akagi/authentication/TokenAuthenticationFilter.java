@@ -57,7 +57,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
                 // token 验证通过
                 // 1、提取token中携带的权限标识
                 // 2、把token中携带的用户权限放入SecurityContextHolder交由  Spring Security管理
-                Authentication authentication = token.toAuthentication();
+                Authentication authentication = tokenProvider.getAuthentication(token);
                 AkagiSecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("set Authentication to security context for '{}', uri: {}", authentication.getName(), httpServletRequest.getRequestURI());
                 log.info("Authenticated user access:[{}]-[{}]", token.getClaimsJws().getBody().getSubject(), httpServletRequest.getRequestURI());

@@ -23,7 +23,6 @@ public interface TokenProvider {
 
     /**
      * 设置Token Sign key
-     *
      */
     void store();
 
@@ -34,6 +33,14 @@ public interface TokenProvider {
      * @return
      */
     Key get(String user);
+
+    /**
+     * 从token对象中获取认证信息
+     *
+     * @param token
+     * @return
+     */
+    Authentication getAuthentication(Token token);
 
 
     /**

@@ -2,6 +2,7 @@ package org.siu.akagi.support;
 
 import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.authentication.jwt.TokenProvider;
+import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.model.User;
 import org.siu.akagi.model.JWT;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -83,7 +84,7 @@ public final class LoginService {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         // 将会会调用 AbstractAuthService.loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        AkagiSecurityContextHolder.getContext().setAuthentication(authentication);
         tokenProvider.store();
         return authentication;
     }
