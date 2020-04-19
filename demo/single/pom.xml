@@ -52,24 +52,34 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>ai.grakn</groupId>
+            <artifactId>redis-mock</artifactId>
+            <version>0.1.6</version>
+        </dependency>
         <!--lombok 代码工具-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-       <dependency>
-      <groupId>org.siu</groupId>
-      <artifactId>akagi</artifactId>
-      <version>1.0.0.RC3</version>
-    </dependency>
+        <dependency>
+            <groupId>org.siu</groupId>
+            <artifactId>akagi</artifactId>
+            <version>1.0.0.RC5</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.14.3</version>
+            <scope>compile</scope>
+        </dependency>
 
 
     </dependencies>

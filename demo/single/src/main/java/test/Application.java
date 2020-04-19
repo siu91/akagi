@@ -1,6 +1,7 @@
 package test;
 
 
+import ai.grakn.redismock.RedisServer;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,25 @@ import java.util.List;
 @SpringBootApplication
 public class Application {
 
-    public static void main(String[] args) {
+    private static RedisServer server = null;
+
+    public static void setUp() throws IOException {
+        server = RedisServer.newRedisServer(6379);  // bind to a random port
+        server.start();
+        String h = server.getHost();//0.0.0.0
+        System.out.println("内嵌redis绑定主机"+h);
+    }
+
+
+    public static void tireDownAll() throws IOException {
+        server.stop();
+        server = null;
+    }
+
+
+    public static void main(String[] args) throws IOException {
+        setUp
+                ();
         SpringApplication.run(Application.class, args);
     }
 
