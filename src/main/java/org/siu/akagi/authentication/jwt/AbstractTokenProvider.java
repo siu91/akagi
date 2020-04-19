@@ -7,8 +7,6 @@ import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.constant.Constant;
-import org.siu.akagi.model.JWT;
-import org.siu.akagi.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 

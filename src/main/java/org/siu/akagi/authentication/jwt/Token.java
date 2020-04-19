@@ -5,7 +5,6 @@ import io.jsonwebtoken.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.siu.akagi.constant.Constant;
-import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.model.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -89,7 +88,7 @@ public class Token {
      * @param key
      */
     public void parser(Key key) {
-        this.claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(this.token);
+        this.claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(this.token);
         this.type = TokenType.COMMON.toString().equals(this.claimsJws.getBody().getIssuer()) ? TokenType.COMMON : TokenType.REFRESH;
         this.username = this.claimsJws.getBody().getSubject();
         if (this.claimsJws.getBody().getSubject().equals(this.username)) {
@@ -124,42 +123,6 @@ public class Token {
         return this.authentication;
     }
 
-
-    public Authentication toAuthentication(String authoritiesStr) {
-        if (this.authentication == null) {
-            Assert.notNull(this.claimsJws, "必须先解析token");
-            Claims claims = this.claimsJws.getBody();
-
-            Collection<? extends GrantedAuthority> authorities =
-                    Arrays.stream(authoritiesStr.split(Constant.Auth.AUTHORITIES_SPLIT))
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
-
-            User principal = new User(claims.getSubject(), "", authorities);
-            principal.setClaimsJws(this.claimsJws);
-
-            this.authentication = new UsernamePasswordAuthenticationToken(principal, token, authorities);
-        }
-        return this.authentication;
-    }
-
-    public Authentication toRefreshAuthentication() {
-        if (this.authentication == null) {
-            Assert.notNull(this.claimsJws, "必须先解析token");
-            Claims claims = this.claimsJws.getBody();
-
-            Collection<? extends GrantedAuthority> authorities =
-                    Arrays.stream(AkagiSecurityContextHolder.getAkagiGlobalProperties().getJsonWebTokenRefreshPermit().split(Constant.Auth.AUTHORITIES_SPLIT))
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
-
-            User principal = new User(claims.getSubject(), "", authorities);
-            principal.setClaimsJws(this.claimsJws);
-
-            this.authentication = new UsernamePasswordAuthenticationToken(principal, token, authorities);
-        }
-        return this.authentication;
-    }
 
 
 }

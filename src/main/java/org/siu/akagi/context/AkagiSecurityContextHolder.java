@@ -36,7 +36,7 @@ public class AkagiSecurityContextHolder extends SecurityContextHolder {
         if (SecurityContextHolder.getContext() instanceof AkagiContextImpl) {
             return ((AkagiContextImpl) SecurityContextHolder.getContext()).getAuthorities();
         }
-        return null;
+        return Optional.empty();
     }
 
     public static Optional<String> getCurrentUserName() {
