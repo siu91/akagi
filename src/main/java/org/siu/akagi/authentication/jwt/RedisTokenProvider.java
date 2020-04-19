@@ -2,7 +2,6 @@ package org.siu.akagi.authentication.jwt;
 
 
 import io.jsonwebtoken.Claims;
-import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
 import org.siu.akagi.model.JWT;
@@ -17,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.security.Key;
-import java.util.Date;
 import java.util.Optional;
 
 /**
