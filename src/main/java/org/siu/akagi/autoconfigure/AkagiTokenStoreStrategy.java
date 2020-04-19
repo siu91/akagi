@@ -18,6 +18,7 @@ public enum AkagiTokenStoreStrategy {
      * 每个用户单独的 Token Sign Key 保存在本地，不支持分布式下注销/拉黑
      */
     LOCAL,
+
     /**
      * 每个用户单独的 Token Sign Key 保存在Redis，支持分布式下注销/拉黑
      */

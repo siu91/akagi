@@ -19,12 +19,8 @@ public interface TokenProvider {
     /**
      * 移除Key
      */
-    void remove();
+    void removeSignKey();
 
-    /**
-     * 设置Token Sign key
-     */
-    void store();
 
     /**
      * 获取用户的签名key
@@ -32,32 +28,19 @@ public interface TokenProvider {
      * @param user
      * @return
      */
-    Key get(String user);
+    Key signKey(String user);
 
-    /**
-     * 从token对象中获取认证信息
-     *
-     * @param token
-     * @return
-     */
-    Authentication getAuthentication(Token token);
 
 
     /**
-     * token 验证
+     * 交换 jwt
      *
      * @param jwt
      * @return
      */
-    Token authentication(String jwt);
+    Token parseToken(String jwt);
 
-    /**
-     * 生成 jwt 对象
-     *
-     * @param authentication
-     * @return
-     */
-    JWT create(Authentication authentication);
+
 
     /**
      * 生成 jwt对象
@@ -66,12 +49,12 @@ public interface TokenProvider {
      * @param rememberMe
      * @return
      */
-    JWT create(Authentication authentication, boolean rememberMe);
+    JWT createToken(Authentication authentication, boolean rememberMe);
 
     /**
      * 刷新token
      *
      * @return
      */
-    JWT refresh();
+    JWT refreshToken();
 }

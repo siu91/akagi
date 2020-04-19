@@ -1,17 +1,23 @@
 package org.siu.akagi.authentication.jwt;
 
 
+import io.jsonwebtoken.Claims;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
+import org.siu.akagi.model.JWT;
 import org.siu.akagi.model.User;
 import org.siu.akagi.constant.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.security.Key;
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -25,65 +31,133 @@ import java.util.Optional;
 public class RedisTokenProvider extends AbstractTokenProvider {
     private Logger logger = LoggerFactory.getLogger(RedisTokenProvider.class);
 
-    protected TokenSignKeyCache cache;
 
-    public RedisTokenProvider(String refreshPermit, long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe, TokenSignKeyCache cache) {
-        super(refreshPermit, tokenValidityInSeconds, tokenValidityInSecondsForRememberMe);
-        this.cache = cache;
+    public RedisTokenProvider(long tokenValidityInSeconds, long tokenValidityInSecondsForRememberMe) {
+        super(tokenValidityInSeconds, tokenValidityInSecondsForRememberMe);
     }
 
     @Resource
-    private RedisTemplate redisTemplate;
-
+    private RedisTemplate<String, Serializable> redisTemplate;
 
     @Override
-    public void remove() {
+    public Token parseToken(String jwt) {
+        Token token = super.authentication(jwt);
+        Authentication authentication;
+        if (TokenType.COMMON.equals(token.getType())) {
+            String tokenId = token.getClaimsJws().getBody().get(Constant.Auth.TOKEN_ID_KEY).toString();
+            authentication = getAuthentication(tokenId);
+
+        } else {
+            User principal = new User(token.username, "", AkagiSecurityContextHolder.getAkagiGlobalProperties().getRefreshTokenAuthorities());
+            principal.setClaimsJws(token.claimsJws);
+            authentication = new UsernamePasswordAuthenticationToken(principal, token, AkagiSecurityContextHolder.getAkagiGlobalProperties().getRefreshTokenAuthorities());
+        }
+        token.setAuthentication(authentication);
+
+        return token;
+    }
+
+    @Override
+    public JWT createToken(Authentication authentication, boolean remember) {
+        this.storeSignKey();
+
+        TokenPair tp = super.createTokenPair(authentication, remember);
+
+        String user = ((User) authentication.getPrincipal()).getUsername();
+        // 标记token 对应的权限
+        TokenCache.setAuthentication(tp.getT().getKey(), authentication);
+        set(tp.getT().getKey(), authentication);
+        // 标记 refresh 和token 对应关系
+        TokenCache.COMMON_CACHE.put(tp.getRt().getKey(), tp.getT().getKey());
+        set(tp.getRt().getKey(), tp.getT().getKey());
+
+
+        return tp.toJWT(user);
+    }
+
+    @Override
+    public JWT refreshToken() {
+        this.storeSignKey();
+
+        Optional<User> authUser = AkagiSecurityContextHolder.getCurrentUser();
+        if (authUser.isPresent()) {
+            Claims claims = authUser.get().getClaimsJws().getBody();
+            String rti = claims.get(Constant.Auth.TOKEN_ID_KEY).toString();
+
+            String ti = TokenCache.COMMON_CACHE.getIfPresent(rti);
+            Authentication authentication = TokenCache.getAuthentication(ti);
+            TokenPair tp = super.createTokenPair(authentication, true);
+            // 标记token 对应的权限
+            TokenCache.setAuthentication(tp.getT().getKey(), authentication);
+            set(tp.getT().getKey(), authentication);
+            // 标记 refresh 和token 对应关系
+            TokenCache.COMMON_CACHE.put(tp.getRt().getKey(), tp.getT().getKey());
+            set(tp.getRt().getKey(), tp.getT().getKey());
+
+            return tp.toJWT(claims.getSubject());
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeSignKey() {
         Optional<String> user = AkagiSecurityContextHolder.getCurrentUserName();
         if (user.isPresent()) {
             String username = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.get();
-            cache.remove(username);
+            TokenCache.removeSignKey(username);
             remove(username);
         }
     }
 
-    @Override
-    public void store() {
+    public void storeSignKey() {
         Optional<User> currentUser = AkagiSecurityContextHolder.getCurrentUser();
         if (currentUser.isPresent()) {
             User user = currentUser.get();
             String base64 = user.toBase64();
-            cache.set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.getUsername(), toKey(base64));
-            set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.getUsername(), base64);
-        }else {
+            Key key = toKey(base64);
+            TokenCache.setSignKey(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.getUsername(), key);
+            set(Constant.RedisKey.USER_TOKEN_SECRET_KEY + user.getUsername(), key);
+        } else {
             log.info("current user is null");
         }
     }
 
     @Override
-    public Key get(String user) {
+    public Key signKey(String user) {
         String signKeyRedisKey = Constant.RedisKey.USER_TOKEN_SECRET_KEY + user;
+        Key key = null;
         if (exists(signKeyRedisKey)) {
-            Key s = cache.get(signKeyRedisKey);
-            if (s != null) {
-                return s;
+            key = TokenCache.getSignKey(signKeyRedisKey);
+            if (key == null) {
+                ValueOperations<String, Serializable> operations = redisTemplate.opsForValue();
+                key = (Key) operations.get(signKeyRedisKey);
+                TokenCache.setSignKey(signKeyRedisKey, key);
             }
         }
 
-        Object result;
-        ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-        result = operations.get(signKeyRedisKey);
+        return key;
+    }
 
-        if (result != null) {
-            return toKey(result.toString());
+    public Authentication getAuthentication(String tokenId) {
+        Authentication authentication = null;
+        if (exists(tokenId)) {
+            authentication = TokenCache.getAuthentication(tokenId);
+            if (authentication == null) {
+                ValueOperations<String, Serializable> operations = redisTemplate.opsForValue();
+                authentication = (Authentication) operations.get(tokenId);
+                TokenCache.setAuthentication(tokenId, authentication);
+            }
         }
-        return null;
+
+        return authentication;
     }
 
 
-    public boolean set(final String key, Object value) {
+    public boolean set(final String key, Serializable value) {
         boolean result = false;
         try {
-            ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+            ValueOperations<String, Serializable> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             result = true;
         } catch (Exception e) {

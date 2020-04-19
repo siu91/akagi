@@ -3,13 +3,11 @@ package org.siu.akagi.support;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.authentication.jwt.TokenProvider;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
-import org.siu.akagi.model.User;
 import org.siu.akagi.model.JWT;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.Resource;
 
@@ -53,7 +51,7 @@ public final class LoginService {
         // 认证，通过并返回权限
         Authentication authentication = authentication(user, pass);
 
-        return tokenProvider.create(authentication, remember);
+        return tokenProvider.createToken(authentication, remember);
 
     }
 
@@ -61,7 +59,7 @@ public final class LoginService {
      * 注销
      */
     public void logout() {
-        tokenProvider.remove();
+        tokenProvider.removeSignKey();
     }
 
     /**
@@ -70,7 +68,7 @@ public final class LoginService {
      * @return
      */
     public JWT refreshToken() {
-        return tokenProvider.refresh();
+        return tokenProvider.refreshToken();
     }
 
 
@@ -85,7 +83,7 @@ public final class LoginService {
         // 将会会调用 AbstractAuthService.loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         AkagiSecurityContextHolder.getContext().setAuthentication(authentication);
-        tokenProvider.store();
+
         return authentication;
     }
 }

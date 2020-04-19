@@ -4,13 +4,16 @@ import lombok.Data;
 import org.siu.akagi.authorize.AuthorizeService;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.authorize.Authorize;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 自动配置相关配置项
@@ -21,7 +24,7 @@ import java.util.Set;
  */
 @ConfigurationProperties(prefix = AkagiProperties.PREFIX)
 @Data
-public class AkagiProperties {
+public class AkagiProperties implements InitializingBean {
 
     public static final String PREFIX = "akagi.security";
 
@@ -94,4 +97,18 @@ public class AkagiProperties {
      */
     private Class<? extends Authorize> authorizeServiceClass = AuthorizeService.class;
 
+    /**
+     * 刷新token 权限
+     */
+    private List<GrantedAuthority> refreshTokenAuthorities;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.refreshTokenAuthorities =
+                Arrays.stream(this.jsonWebTokenRefreshPermit.split(Constant.Auth.AUTHORITIES_SPLIT))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+
+    }
 }

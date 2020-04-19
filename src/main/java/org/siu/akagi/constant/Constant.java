@@ -74,6 +74,11 @@ public class Constant {
         public static final String ORIGIN_AUTHORITIES_KEY = "o_auth";
 
         /**
+         * token 换取的ID
+         */
+        public static final String TOKEN_ID_KEY = "ti";
+
+        /**
          * token中权限信息分割符
          */
         public static final String AUTHORITIES_SPLIT = ",";

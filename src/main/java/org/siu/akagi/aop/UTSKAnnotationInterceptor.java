@@ -25,7 +25,7 @@ public class UTSKAnnotationInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        tokenProvider.remove();
+        tokenProvider.removeSignKey();
         return invocation.proceed();
     }
 

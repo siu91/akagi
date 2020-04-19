@@ -3,17 +3,18 @@ package org.siu.akagi.authentication.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.siu.akagi.context.AkagiSecurityContextHolder;
-import org.siu.akagi.model.User;
 import org.siu.akagi.constant.Constant;
 import org.siu.akagi.model.JWT;
+import org.siu.akagi.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -26,14 +27,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractTokenProvider implements TokenProvider {
 
-    public static final String TOKEN_PROVIDER = "Akagi Token Provider";
-    public static final String REFRESH_TOKEN_PROVIDER = "Akagi Refresh Token Provider";
-
-
-    /**
-     * 刷新token权限标识
-     */
-    protected String refreshPermit;
 
     /**
      * 默认token失效时间(秒)
@@ -48,8 +41,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
     protected long expire4Remember;
 
 
-    public AbstractTokenProvider(String refreshPermit, long expire, long expire4Remember) {
-        this.refreshPermit = refreshPermit;
+    public AbstractTokenProvider(long expire, long expire4Remember) {
         this.expire = expire;
         this.expire4Remember = expire4Remember;
     }
@@ -66,27 +58,28 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-
     /**
-     * 生成 JSON Web Token
      *
      * @param authentication
-     * @param rememberMe
+     * @param remember
      * @return
      */
-    @Override
-    public JWT create(Authentication authentication, boolean rememberMe) {
-        String token = this.buildJWT(authentication, rememberMe);
+    public TokenPair createTokenPair(Authentication authentication, boolean remember) {
         long now = (new Date()).getTime();
-        String refreshToken = this.buildJWT(authentication, new Date(now + Constant.Auth.DEFAULT_REFRESH_TOKEN_EXPIRE_MS), REFRESH_TOKEN_PROVIDER);
-        String user = ((User) authentication.getPrincipal()).getUsername();
-        return new JWT(user, token, refreshToken);
+        Date validity;
+        if (remember) {
+            validity = new Date(now + this.expire4Remember * 1000);
+        } else {
+            validity = new Date(now + this.expire * 1000);
+        }
+        Key key = signKey(authentication.getName());
+        Pair<String, String> token = this.buildJWT(TokenType.COMMON, key, authentication.getName(), validity);
+        Pair<String, String> refreshToken = this.buildJWT(TokenType.REFRESH, key, authentication.getName(), validity);
+
+
+        return new TokenPair(token, refreshToken);
     }
 
-    @Override
-    public JWT create(Authentication authentication) {
-        return this.create(authentication, false);
-    }
 
     /**
      * 生成 JSON Web Token
@@ -106,7 +99,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         }
 
         // 构建token信息
-        return buildJWT(authentication, validity, TOKEN_PROVIDER);
+        return buildJWT(authentication, validity, TokenType.COMMON);
     }
 
 
@@ -117,11 +110,11 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * @param validity
      * @return
      */
-    protected String buildJWT(Authentication authentication, Date validity, String provider) {
+    protected String buildJWT(Authentication authentication, Date validity, TokenType provider) {
         String authorities;
         String originAuthorities = null;
-        if (REFRESH_TOKEN_PROVIDER.equals(provider)) {
-            authorities = this.refreshPermit;
+        if (TokenType.REFRESH.equals(provider)) {
+            authorities = AkagiSecurityContextHolder.getAkagiGlobalProperties().getJsonWebTokenRefreshPermit();
             originAuthorities = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(Constant.Auth.AUTHORITIES_SPLIT));
@@ -143,11 +136,11 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * @param validity
      * @return
      */
-    protected String buildJWT(String subject, String authorities, String originAuthorities, Date validity, String provider) {
+    protected String buildJWT(String subject, String authorities, String originAuthorities, Date validity, TokenType provider) {
         // 构建token信息
         return Jwts.builder()
                 // 该JWT的签发者
-                .setIssuer(provider)
+                .setIssuer(provider.toString())
                 // 该JWT所面向的用户:放入用户信息（用户名）
                 .setSubject(subject)
                 // 接收该JWT的一方
@@ -156,7 +149,7 @@ public abstract class AbstractTokenProvider implements TokenProvider {
                 .claim(Constant.Auth.AUTHORITIES_KEY, authorities)
                 .claim(Constant.Auth.ORIGIN_AUTHORITIES_KEY, originAuthorities == null ? "" : originAuthorities)
                 // 签名
-                .signWith(this.get(subject), SignatureAlgorithm.HS512)
+                .signWith(this.signKey(subject), SignatureAlgorithm.HS512)
                 // 过期时间
                 .setExpiration(validity)
                 // 生效开始时间
@@ -166,28 +159,33 @@ public abstract class AbstractTokenProvider implements TokenProvider {
                 .compact();
     }
 
-
     /**
-     * 刷新token
-     *
+     * @param type
+     * @param signKey
+     * @param subject
+     * @param validity
      * @return
      */
-    @Override
-    public JWT refresh() {
-        Optional<User> authUser = AkagiSecurityContextHolder.getCurrentUser();
-        if (authUser.isPresent()) {
-            this.store();
-            Claims claims = authUser.get().getClaimsJws().getBody();
-            long now = (new Date()).getTime();
-            Date validity1 = new Date(now + this.expire4Remember * 1000);
-            Date validity2 = new Date(now + Constant.Auth.DEFAULT_REFRESH_TOKEN_EXPIRE_MS);
-            String newToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), null, validity1, TOKEN_PROVIDER);
-            String newRefreshToken = buildJWT(claims.getSubject(), claims.get(Constant.Auth.AUTHORITIES_KEY).toString(), claims.get(Constant.Auth.ORIGIN_AUTHORITIES_KEY).toString(), validity2, REFRESH_TOKEN_PROVIDER);
-
-            return new JWT(claims.getSubject(), newToken, newRefreshToken);
-        }
-
-        return null;
+    protected Pair<String, String> buildJWT(TokenType type, Key signKey, String subject, Date validity) {
+        String tokenId = UUID.randomUUID().toString();
+        return new Pair<>(tokenId, Jwts.builder()
+                // 该JWT的签发者
+                .setIssuer(type.toString())
+                // 该JWT所面向的用户:放入用户信息（用户名）
+                .setSubject(subject)
+                // 接收该JWT的一方
+                // .setAudience("")
+                // 放入权限信息
+                .claim(Constant.Auth.TOKEN_ID_KEY, tokenId)
+                // 签名
+                .signWith(this.signKey(subject), SignatureAlgorithm.HS256)
+                // 过期时间
+                .setExpiration(validity)
+                // 生效开始时间
+                .setNotBefore(new Date())
+                // 在什么时候签发的
+                .setIssuedAt(new Date())
+                .compact());
     }
 
 
@@ -197,11 +195,10 @@ public abstract class AbstractTokenProvider implements TokenProvider {
      * @param authToken
      * @return
      */
-    @Override
     public Token authentication(String authToken) {
         Token token = new Token(authToken);
         try {
-            Key key = this.get(token.getUsername());
+            Key key = this.signKey(token.getUsername());
             if (key != null) {
                 token.parser(key);
             } else {
@@ -223,9 +220,5 @@ public abstract class AbstractTokenProvider implements TokenProvider {
         return token;
     }
 
-    @Override
-    public Authentication getAuthentication(Token token) {
-        return token.toAuthentication();
-    }
 
 }
