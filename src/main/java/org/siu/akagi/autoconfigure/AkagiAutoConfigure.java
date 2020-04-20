@@ -18,7 +18,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -69,9 +68,16 @@ public class AkagiAutoConfigure implements ApplicationRunner {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnExpression("'${akagi.security.token-store-strategy}'.toLowerCase().equals(T(org.siu.akagi.autoconfigure.AkagiTokenStoreStrategy).REDIS.toString().toLowerCase())")
-    public CacheManager cacheManager(RedisConnectionFactory factory) {
+    public org.springframework.cache.CacheManager cacheManager(RedisConnectionFactory factory) {
         log.info("初始化-Redis CacheManager");
         return RedisCacheManager.builder(factory).build();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean
+    CacheManager cacheHelper() {
+        return new CacheManager();
     }
 
 

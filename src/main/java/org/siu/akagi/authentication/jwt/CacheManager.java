@@ -3,20 +3,27 @@ package org.siu.akagi.authentication.jwt;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.Authentication;
 
+import javax.annotation.Resource;
+import java.io.Serializable;
 import java.security.Key;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Token Sign key 缓存
+ * 缓存
  *
  * @Author Siu
  * @Date 2020/3/29 15:01
  * @Version 0.0.1
  */
 @Slf4j
-public class TokenCache {
+public class CacheManager {
+
+    @Resource
+    private RedisTemplate<String, Serializable> redisTemplate;
 
     protected static final Cache<String, Key> TOKEN_SIGN_KEY_CACHE = CacheBuilder.newBuilder()
             //设置cache的初始大小
@@ -30,7 +37,7 @@ public class TokenCache {
             //设置cache中的数据在写入之后的存活时间为7天
             .expireAfterWrite(7, TimeUnit.DAYS)
             //设置缓存多久没读就自动清除
-            .expireAfterAccess(2, TimeUnit.DAYS)
+            .expireAfterAccess(8, TimeUnit.HOURS)
             //构建cache实例
             .build();
 
@@ -47,7 +54,7 @@ public class TokenCache {
             //设置cache中的数据在写入之后的存活时间为7天
             .expireAfterWrite(7, TimeUnit.DAYS)
             //设置缓存多久没读就自动清除
-            .expireAfterAccess(2, TimeUnit.DAYS)
+            .expireAfterAccess(8, TimeUnit.HOURS)
             //构建cache实例
             .build();
 
@@ -63,7 +70,7 @@ public class TokenCache {
             //设置cache中的数据在写入之后的存活时间为7天
             .expireAfterWrite(7, TimeUnit.DAYS)
             //设置缓存多久没读就自动清除
-            .expireAfterAccess(2, TimeUnit.DAYS)
+            .expireAfterAccess(8, TimeUnit.HOURS)
             //构建cache实例
             .build();
 
@@ -74,31 +81,57 @@ public class TokenCache {
      * @param key
      * @return
      */
-    public static Authentication getAuthentication(String key) {
+    public Authentication getAuthentication(String key) {
         if (log.isDebugEnabled()) {
             log.info(TOKEN_AUTHORITIES_CACHE.stats().toString());
         }
-        return TOKEN_AUTHORITIES_CACHE.getIfPresent(key);
+        Authentication authentication = null;
+        if (redisExists(key)) {
+            authentication = TOKEN_AUTHORITIES_CACHE.getIfPresent(key);
+            if (authentication == null) {
+                ValueOperations<String, Serializable> operations = redisTemplate.opsForValue();
+                authentication = (Authentication) operations.get(key);
+                setAuthentication(key, authentication);
+            }
+        }
+
+        return authentication;
     }
 
-    public static void setAuthentication(String key, Authentication value) {
+    public void setAuthentication(String key, Authentication value) {
         if (log.isDebugEnabled()) {
             log.info(TOKEN_AUTHORITIES_CACHE.stats().toString());
         }
         TOKEN_AUTHORITIES_CACHE.put(key, value);
+        redisSet(key, value);
+    }
+
+    public void setString(String key, String value) {
+        if (log.isDebugEnabled()) {
+            log.info(COMMON_CACHE.stats().toString());
+        }
+        COMMON_CACHE.put(key, value);
+        redisSet(key, value);
     }
 
     /**
      * 获取缓存中的值
      *
-     * @param key
+     * @param signKeyRedisKey
      * @return
      */
-    public static Key getSignKey(String key) {
-        if (log.isDebugEnabled()) {
-            log.info(TOKEN_SIGN_KEY_CACHE.stats().toString());
+    public Key getSignKey(String signKeyRedisKey) {
+        Key key = null;
+        if (redisExists(signKeyRedisKey)) {
+            key = TOKEN_SIGN_KEY_CACHE.getIfPresent(signKeyRedisKey);
+            if (key == null) {
+                ValueOperations<String, Serializable> operations = redisTemplate.opsForValue();
+                key = (Key) operations.get(signKeyRedisKey);
+                setSignKey(signKeyRedisKey, key);
+            }
         }
-        return TOKEN_SIGN_KEY_CACHE.getIfPresent(key);
+
+        return key;
     }
 
 
@@ -108,11 +141,12 @@ public class TokenCache {
      * @param key
      * @param value
      */
-    public static void setSignKey(String key, Key value) {
+    public void setSignKey(String key, Key value) {
         if (log.isDebugEnabled()) {
             log.info(TOKEN_SIGN_KEY_CACHE.stats().toString());
         }
         TOKEN_SIGN_KEY_CACHE.put(key, value);
+        redisSet(key, value);
     }
 
     /**
@@ -120,11 +154,35 @@ public class TokenCache {
      *
      * @param key
      */
-    public static void removeSignKey(String key) {
+    public void removeSignKey(String key) {
         if (log.isDebugEnabled()) {
             log.info(TOKEN_SIGN_KEY_CACHE.stats().toString());
         }
         TOKEN_SIGN_KEY_CACHE.invalidate(key);
+        redisRemove(key);
     }
+
+
+    public boolean redisSet(final String key, Serializable value) {
+        boolean result = false;
+        try {
+            ValueOperations<String, Serializable> operations = redisTemplate.opsForValue();
+            operations.set(key, value);
+            result = true;
+        } catch (Exception e) {
+            log.error("set error: key {}, value {}", key, value, e);
+        }
+        return result;
+    }
+
+
+    public void redisRemove(final String key) {
+        redisTemplate.delete(key);
+    }
+
+    public boolean redisExists(final String key) {
+        return redisTemplate.hasKey(key);
+    }
+
 
 }
